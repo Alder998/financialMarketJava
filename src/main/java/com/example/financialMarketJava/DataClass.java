@@ -5,13 +5,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+import Objects.HistoricalTimeSeries;
 import financialData.yfinanceAPI;
+import financialData.yfinanceScraper;
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 
 // The Data Class is where all the main operations will be performed
 
+@Component
 public class DataClass {
 	
 	// This method may be deleted, when the project structure would be set up, and therefore will be sure
@@ -23,6 +28,7 @@ public class DataClass {
 	
 	// Try the Methods from the YF API
 	
+	// Deprecated Method: Yahoo Finance is closed this API
 	public ArrayList<HistoricalQuote> getStockHistory(String ticker, String timeSpan, String interval) throws IOException {
 		
 		ArrayList<HistoricalQuote> history = new ArrayList<HistoricalQuote>();
@@ -57,6 +63,11 @@ public class DataClass {
 		
 		return history;
 		
+	}
+	
+	// TEST Class
+	public HistoricalTimeSeries getStockHistoryFromScraping (String ticker) {
+		return yfinanceScraper.getHistoricalValues(ticker);
 	}
 	
 	
