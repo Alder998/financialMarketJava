@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import Objects.HistoricalTimeSeries;
+import Objects.Ticker;
 import yahoofinance.histquotes.HistoricalQuote;
 
 @RestController
@@ -32,10 +33,13 @@ public class APIEndPoint {
     }
     
     @GetMapping("/api/history")
-    public HistoricalTimeSeries getStockHistoryFromScraping(@RequestParam String ticker) throws Exception {
+    public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping(@RequestParam String ticker) throws Exception {
         return controller.getStockHistoryFromScraping(ticker);
     }
     
-    
+    @GetMapping("/api/ticker")
+    public Ticker getTicker(@RequestParam String ticker) throws Exception {
+        return controller.getTicker(ticker);
+    }
     
 }

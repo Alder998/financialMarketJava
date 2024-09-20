@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import Objects.HistoricalTimeSeries;
+import Objects.Ticker;
 import yahoofinance.histquotes.HistoricalQuote;
 
 @Controller
@@ -30,8 +31,13 @@ public class APIController {
     }
     
     @Transactional
-    public HistoricalTimeSeries getStockHistoryFromScraping(String ticker) throws IOException {
+    public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping(String ticker) throws IOException {
 		return data.getStockHistoryFromScraping(ticker);
+    }
+    
+    @Transactional
+    public Ticker getTicker(String ticker) throws IOException {
+		return data.getTicker(ticker);
     }
 
 }

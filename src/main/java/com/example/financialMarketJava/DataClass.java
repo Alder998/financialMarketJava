@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import Objects.HistoricalTimeSeries;
+import Objects.Ticker;
 import financialData.yfinanceAPI;
 import financialData.yfinanceScraper;
 import yahoofinance.Stock;
@@ -62,13 +63,21 @@ public class DataClass {
 		}
 		
 		return history;
-		
 	}
 	
-	// TEST Class
-	public HistoricalTimeSeries getStockHistoryFromScraping (String ticker) {
+	public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping (String ticker) {
 		return yfinanceScraper.getHistoricalValues(ticker);
 	}
+	
+	public Ticker getTicker (String symbol) {
+		Ticker ticker = new Ticker();
+		
+		ticker.setSymbol(symbol);
+		ticker.setHistory(this.getStockHistoryFromScraping(symbol));
+		
+		return ticker;
+	}
+	
 	
 	
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,6 +30,9 @@ class APITest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+
 
     @Test
     public void testGetAPIData() throws Exception {
@@ -38,8 +42,19 @@ class APITest {
     
   @Test
   public void getStockHistory() throws Exception {
-   mockMvc.perform(get("/api/history").param("ticker", "AMZN"))
-             .andExpect(MockMvcResultMatchers.status().isOk());
+	  MvcResult result = mockMvc.perform(get("/api/ticker").param("ticker", "AMZN"))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   
+       // Deserialize and serialize again the JSON file to get the JSON Formatted
+       Object json = objectMapper.readValue(responseBody, Object.class);
+       String formattedJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+       
+	   // Print the JSON Body
+	   System.out.println("Body of the API: " + formattedJson);
   }
     
 }

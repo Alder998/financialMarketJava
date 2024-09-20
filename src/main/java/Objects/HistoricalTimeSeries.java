@@ -4,20 +4,14 @@ import java.time.OffsetDateTime;
 
 public class HistoricalTimeSeries {
 	
-	private String ticker;
 	private OffsetDateTime date;
 	private float open;
 	private float close;
 	private float high;
 	private float low;
 	private float adjClose;
+	private long volume;
 	
-	public String getTicker() {
-		return ticker;
-	}
-	public void setTicker(String ticker) {
-		this.ticker = ticker;
-	}
 	public OffsetDateTime getDate() {
 		return date;
 	}
@@ -53,6 +47,12 @@ public class HistoricalTimeSeries {
 	}
 	public void setAdjClose(float adjClose) {
 		this.adjClose = adjClose;
+	}
+	public long getVolume() {
+		return volume;
+	}
+	public void setVolume(long volume) {
+		this.volume = volume;
 	}
 
 	
