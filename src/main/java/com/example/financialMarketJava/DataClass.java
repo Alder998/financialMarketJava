@@ -65,15 +65,15 @@ public class DataClass {
 		return history;
 	}
 	
-	public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping (String ticker) {
-		return yfinanceScraper.getHistoricalValues(ticker);
+	public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping (String ticker, String period) {
+		return yfinanceScraper.getHistoricalValues(ticker, period);
 	}
 	
-	public Ticker getTicker (String symbol) {
+	public Ticker getTicker (String symbol, String period) {
 		Ticker ticker = new Ticker();
 		
 		ticker.setSymbol(symbol);
-		ticker.setHistory(this.getStockHistoryFromScraping(symbol));
+		ticker.setHistory(this.getStockHistoryFromScraping(symbol, period));
 		
 		return ticker;
 	}

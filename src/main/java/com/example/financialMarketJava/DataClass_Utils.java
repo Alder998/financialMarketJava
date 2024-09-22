@@ -4,6 +4,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.stream.Collectors;
+
+import Objects.HistoricalTimeSeries;
 
 public class DataClass_Utils {
 	
@@ -128,6 +131,99 @@ public class DataClass_Utils {
             throw new IllegalArgumentException("No month found for the name" + monthString);
 		}
 		return monthNumber;
+	}
+	
+	public static String getUnixTimeStampFromString (String intervalInString) {
+		
+        OffsetDateTime date = OffsetDateTime.now(ZoneOffset.of("+02:00"));
+		if (intervalInString.equals("now")) {
+	        long unixTimestamp = date.toEpochSecond();
+	        String currentTimeStamp = Long.toString(unixTimestamp);
+	        
+	        return currentTimeStamp;
+		}
+		else {
+			// First, we need to get the date components, and we got a function for it
+			ArrayList<String> components =  getTimeAndUnitFromString(intervalInString);
+	        int quantity = Integer.parseInt(components.get(1).toString());
+	        String unit = components.get(0);
+	
+			// Secondly, it is needed to get in OffsetDateTime the date back at the interval that has been selected
+	        if (unit.equals("y")) {
+	        	date = date.minusYears(quantity);
+	        }
+	        else if (unit.equals("mo")) {
+	        	date = date.minusMonths(quantity);
+	        }
+	        else if (unit.equals("d")) {
+	        	date = date.minusDays(quantity);
+	        }
+	        
+	        // finally, convert the date to Unix Time stamp
+	        long unixTimestamp = date.toEpochSecond();
+	        String finalTimeStamp = Long.toString(unixTimestamp);
+	        
+	        return finalTimeStamp;
+		}
+	}
+	
+	public static ArrayList<HistoricalTimeSeries> updateHistoryForStocksOperations (ArrayList<HistoricalTimeSeries> history, String byWhat) {
+		
+		 ArrayList<HistoricalTimeSeries> finalHistory = new ArrayList<HistoricalTimeSeries>();
+		 
+	    if (byWhat.equals("Splits")) {
+
+	        // "Clean" the History Array
+	        finalHistory = history.stream().filter((x) -> x.getStockSplit().equals("NaN"))
+			  													.collect(Collectors.toCollection(ArrayList::new));
+	        
+	        // Some works now is needed to update the extra operations (Stock Splits and dividends)
+	        ArrayList<HistoricalTimeSeries> stockSplitsObjects = history.stream().filter((x) -> !x.getStockSplit().equals("NaN"))
+	        											  		.collect(Collectors.toCollection(ArrayList::new));
+	        for (HistoricalTimeSeries obj : stockSplitsObjects) {
+	           	// Isolate the dates in which the stocks splits has happened
+	            ArrayList<HistoricalTimeSeries> stockSplitsDates = history.stream().filter((x) -> x.getStockSplit().equals("NaN") &&
+	            													x.getDate().getDayOfYear() == obj.getDate().getDayOfYear() && 
+	            													x.getDate().getYear() == obj.getDate().getYear())
+				  												   .collect(Collectors.toCollection(ArrayList::new));
+	            for (HistoricalTimeSeries obj1 : stockSplitsDates) {
+	            	obj1.setStockSplit(obj.getStockSplit());
+	            	
+	            	finalHistory.add(obj1);
+	            }
+	        }
+	        
+	        // Sort the Stock List
+	        finalHistory.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
+	        
+	    }
+        
+        else if (byWhat.equals("Dividends")) {
+            // "Clean" the History Array
+            finalHistory = history.stream().filter((x) -> x.getDividend() == 0)
+    		  													.collect(Collectors.toCollection(ArrayList::new));
+            
+            // Some works now is needed to update the extra operations (Stock Splits and dividends)
+            ArrayList<HistoricalTimeSeries> stockSplitsObjects = history.stream().filter((x) -> x.getDividend() != 0)
+            											  		.collect(Collectors.toCollection(ArrayList::new));
+            for (HistoricalTimeSeries obj : stockSplitsObjects) {
+               	// Isolate the dates in which the stocks splits has happened
+                ArrayList<HistoricalTimeSeries> stockSplitsDates = history.stream().filter((x) -> x.getDividend() == 0 &&
+                													x.getDate().getDayOfYear() == obj.getDate().getDayOfYear() && 
+                													x.getDate().getYear() == obj.getDate().getYear())
+    			  												   .collect(Collectors.toCollection(ArrayList::new));
+                for (HistoricalTimeSeries obj1 : stockSplitsDates) {
+                	obj1.setDividend(obj.getDividend());
+                	
+                	finalHistory.add(obj1);
+                }
+            }
+            
+            // Sort the Stock List
+            finalHistory.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
+            
+        }
+        	return finalHistory;
 	}
 	
 }

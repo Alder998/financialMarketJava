@@ -42,7 +42,7 @@ class APITest {
     
   @Test
   public void getStockHistory() throws Exception {
-	  MvcResult result = mockMvc.perform(get("/api/ticker").param("ticker", "AMZN"))
+	  MvcResult result = mockMvc.perform(get("/api/ticker").param("ticker", "KO").param("period", "20d"))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -53,7 +53,7 @@ class APITest {
        Object json = objectMapper.readValue(responseBody, Object.class);
        String formattedJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
        
-	   // Print the JSON Body
+	   // Print the JSON Body (optional)
 	   System.out.println("Body of the API: " + formattedJson);
   }
     

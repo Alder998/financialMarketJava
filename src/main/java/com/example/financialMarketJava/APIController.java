@@ -31,13 +31,13 @@ public class APIController {
     }
     
     @Transactional
-    public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping(String ticker) throws IOException {
-		return data.getStockHistoryFromScraping(ticker);
+    public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping(String ticker, String period) throws IOException {
+		return data.getStockHistoryFromScraping(ticker, period);
     }
     
     @Transactional
-    public Ticker getTicker(String ticker) throws IOException {
-		return data.getTicker(ticker);
+    public Ticker getTicker(String ticker, String period) throws IOException {
+		return data.getTicker(ticker, period);
     }
 
 }

@@ -33,13 +33,13 @@ public class APIEndPoint {
     }
     
     @GetMapping("/api/history")
-    public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping(@RequestParam String ticker) throws Exception {
-        return controller.getStockHistoryFromScraping(ticker);
+    public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping(@RequestParam String ticker, @RequestParam String period) throws Exception {
+        return controller.getStockHistoryFromScraping(ticker, period);
     }
     
     @GetMapping("/api/ticker")
-    public Ticker getTicker(@RequestParam String ticker) throws Exception {
-        return controller.getTicker(ticker);
+    public Ticker getTicker(@RequestParam String ticker, @RequestParam String period) throws Exception {
+        return controller.getTicker(ticker, period);
     }
     
 }

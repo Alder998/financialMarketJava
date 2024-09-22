@@ -11,6 +11,8 @@ public class HistoricalTimeSeries {
 	private float low;
 	private float adjClose;
 	private long volume;
+	private String stockSplit;
+	private float dividend;
 	
 	public OffsetDateTime getDate() {
 		return date;
@@ -53,6 +55,18 @@ public class HistoricalTimeSeries {
 	}
 	public void setVolume(long volume) {
 		this.volume = volume;
+	}
+	public String getStockSplit() {
+		return stockSplit;
+	}
+	public void setStockSplit(String stockSplit) {
+		this.stockSplit = stockSplit;
+	}
+	public float getDividend() {
+		return dividend;
+	}
+	public void setDividend(float dividend) {
+		this.dividend = dividend;
 	}
 
 	
