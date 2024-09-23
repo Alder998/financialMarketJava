@@ -20,6 +20,9 @@ public class yfinanceScraper {
 	// Here we are Trying to scrape some useful data from Yahoo Finance
 	 public static ArrayList<HistoricalTimeSeries> getHistoricalValues (String ticker, String period) {
 		 
+		 // Encode the name of ticker to adapt it to the index that have the character "^"
+		 ticker = ticker.replace("^", "%5E");
+		 
 		 ArrayList<HistoricalTimeSeries> history = new ArrayList<HistoricalTimeSeries>();
 		 boolean dividendsPresent = false;
 		 boolean splitsPresent = false;
@@ -70,11 +73,11 @@ public class yfinanceScraper {
 	                	}
 	                }
 	                else {
-		                float open = Float.parseFloat(words[3]);
-		    	        float high = Float.parseFloat(words[4]);
-		                float low = Float.parseFloat(words[5]);
-		                float close = Float.parseFloat(words[6]);
-		                float adjClose = Float.parseFloat(words[7]);
+		                float open = Float.parseFloat(words[3].replace(",", ""));
+		    	        float high = Float.parseFloat(words[4].replace(",", ""));
+		                float low = Float.parseFloat(words[5].replace(",", ""));
+		                float close = Float.parseFloat(words[6].replace(",", ""));
+		                float adjClose = Float.parseFloat(words[7].replace(",", ""));
 		                long volume = Long.parseLong(words[8].replace(",", ""));
 		                
 		                // Fill the object

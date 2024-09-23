@@ -42,7 +42,7 @@ class APITest {
     
   @Test
   public void getStockHistory() throws Exception {
-	  MvcResult result = mockMvc.perform(get("/api/ticker").param("ticker", "KO").param("period", "20d"))
+	  MvcResult result = mockMvc.perform(get("/api/ticker").param("ticker", "AAPL").param("period", "10d"))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    

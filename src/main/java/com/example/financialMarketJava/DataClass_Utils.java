@@ -181,6 +181,12 @@ public class DataClass_Utils {
 	        ArrayList<HistoricalTimeSeries> stockSplitsObjects = history.stream().filter((x) -> !x.getStockSplit().equals("NaN"))
 	        											  		.collect(Collectors.toCollection(ArrayList::new));
 	        for (HistoricalTimeSeries obj : stockSplitsObjects) {
+	        	
+	        	// update again the final History Object
+	        	finalHistory = finalHistory.stream().filter((x) -> x.getDate().getDayOfYear() != obj.getDate().getDayOfYear() ||
+																   x.getDate().getYear() != obj.getDate().getYear())
+																   .collect(Collectors.toCollection(ArrayList::new));
+	        	
 	           	// Isolate the dates in which the stocks splits has happened
 	            ArrayList<HistoricalTimeSeries> stockSplitsDates = history.stream().filter((x) -> x.getStockSplit().equals("NaN") &&
 	            													x.getDate().getDayOfYear() == obj.getDate().getDayOfYear() && 
@@ -201,12 +207,18 @@ public class DataClass_Utils {
         else if (byWhat.equals("Dividends")) {
             // "Clean" the History Array
             finalHistory = history.stream().filter((x) -> x.getDividend() == 0)
-    		  													.collect(Collectors.toCollection(ArrayList::new));
+    		  										.collect(Collectors.toCollection(ArrayList::new));
             
             // Some works now is needed to update the extra operations (Stock Splits and dividends)
             ArrayList<HistoricalTimeSeries> stockSplitsObjects = history.stream().filter((x) -> x.getDividend() != 0)
             											  		.collect(Collectors.toCollection(ArrayList::new));
             for (HistoricalTimeSeries obj : stockSplitsObjects) {
+            	
+	        	// update again the final History Object
+	        	finalHistory = finalHistory.stream().filter((x) -> x.getDate().getDayOfYear() != obj.getDate().getDayOfYear() || 
+																   x.getDate().getYear() != obj.getDate().getYear())
+																   .collect(Collectors.toCollection(ArrayList::new));
+            	
                	// Isolate the dates in which the stocks splits has happened
                 ArrayList<HistoricalTimeSeries> stockSplitsDates = history.stream().filter((x) -> x.getDividend() == 0 &&
                 													x.getDate().getDayOfYear() == obj.getDate().getDayOfYear() && 
@@ -223,7 +235,7 @@ public class DataClass_Utils {
             finalHistory.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
             
         }
-        	return finalHistory;
+        return finalHistory;
 	}
 	
 }

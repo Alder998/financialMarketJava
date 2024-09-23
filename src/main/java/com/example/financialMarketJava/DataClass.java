@@ -66,12 +66,15 @@ public class DataClass {
 	}
 	
 	public ArrayList<HistoricalTimeSeries> getStockHistoryFromScraping (String ticker, String period) {
+		
+		// TODO: encode for indexes (for example, S&P 500 is ^GSPC, but it needs to be encoded to be put in the link)
 		return yfinanceScraper.getHistoricalValues(ticker, period);
 	}
 	
 	public Ticker getTicker (String symbol, String period) {
 		Ticker ticker = new Ticker();
 		
+		// TODO: encode for indexes (for example, S&P 500 is ^GSPC, but it needs to be encoded to be put in the link)
 		ticker.setSymbol(symbol);
 		ticker.setHistory(this.getStockHistoryFromScraping(symbol, period));
 		
