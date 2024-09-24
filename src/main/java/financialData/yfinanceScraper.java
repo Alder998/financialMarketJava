@@ -64,12 +64,18 @@ public class yfinanceScraper {
 		                	stockSplit = words[3];
 			            	historyRow.setDate(date);
 			            	historyRow.setStockSplit(stockSplit);
+			            	// set dividend to avoid NullPointer Exception while updating for special
+			            	// Operations
+			            	historyRow.setDividend(dividend);
 	                	}
 	                	if (Arrays.asList(words).contains("Dividend")) {
 	                		dividendsPresent = true;
 	                		dividend = Float.parseFloat(words[3]);
 			            	historyRow.setDate(date);
 			            	historyRow.setDividend(dividend);
+			            	// set Stock Split to avoid NullPointer Exception while updating for special
+			            	// Operations
+			            	historyRow.setStockSplit(stockSplit);
 	                	}
 	                }
 	                else {
@@ -78,7 +84,12 @@ public class yfinanceScraper {
 		                float low = Float.parseFloat(words[5].replace(",", ""));
 		                float close = Float.parseFloat(words[6].replace(",", ""));
 		                float adjClose = Float.parseFloat(words[7].replace(",", ""));
-		                long volume = Long.parseLong(words[8].replace(",", ""));
+		                // Better to add an if, to avoid to have an error if volume is not available
+		                // (it may be not available for very old dates)
+	                	long volume = 0;
+		                if (words.length > 8) {
+			                volume = Long.parseLong(words[8].replace(",", ""));
+		                }
 		                
 		                // Fill the object
 		            	historyRow.setDate(date);
@@ -89,6 +100,8 @@ public class yfinanceScraper {
 		            	historyRow.setAdjClose(adjClose);
 		            	historyRow.setVolume(volume);
 		            	historyRow.setStockSplit(stockSplit);
+		            	historyRow.setDividend(dividend);
+
 	                }
 	                // finally, append
 	            	history.add(historyRow);
