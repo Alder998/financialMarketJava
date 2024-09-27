@@ -22,6 +22,9 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.xml.crypto.Data;
 
 @SpringBootTest
@@ -36,7 +39,7 @@ class APITest {
 
     @Test
     public void testGetAPIData() throws Exception {
-        mockMvc.perform(get("/api/status").param("status", "API Passage is Working Correctly!"))
+        mockMvc.perform(get("/api/status").param("status", "API Passage Status: OK"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
     
@@ -54,7 +57,42 @@ class APITest {
        String formattedJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
        
 	   // Print the JSON Body (optional)
-	   System.out.println("Body of the API: " + formattedJson);
+	   // System.out.println("Body of the API: " + formattedJson);
+  }
+  
+  @Test
+  public void calculateAverageReturns() throws Exception {
+	  String ticker = "AAPL";
+	  String period = "1mo";
+	  MvcResult result = mockMvc.perform(get("/api/returns").param("ticker", ticker).param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   //System.out.println("Average daily Returns for Ticker " + ticker + " and Period " + period + ": " + responseBody + " %");
+  }
+  
+  // Generalized Test on returns
+  @Test
+  public void generalizedReturnsTest() throws Exception {
+	  
+	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "CAT", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
+	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("2d", "15d", "2mo", "6mo", "1y", "10y", "40y"));
+	  System.out.println("---GENERALIZED RETURN CONTROL OVER " + tickers.size() * periods.size() + " DOWNLOADS---");
+
+	  for (String ticker : tickers) {
+		  for (String period : periods) {
+			  MvcResult result = mockMvc.perform(get("/api/returns").param("ticker", ticker).param("period", period))
+			         .andExpect(MockMvcResultMatchers.status().isOk())
+			         .andReturn();
+			
+			   // Get the JSON body as String
+			   String responseBody = result.getResponse().getContentAsString();
+			   System.out.println("Average daily Returns for Ticker " + ticker + " and Period " + period +
+					   ": " + responseBody + " %");
+		  }
+	  }
   }
     
 }

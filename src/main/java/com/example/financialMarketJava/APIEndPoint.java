@@ -42,4 +42,9 @@ public class APIEndPoint {
         return controller.getTicker(ticker, period);
     }
     
+    @GetMapping("/api/returns")
+    public float calculateAverageReturns(@RequestParam String ticker, @RequestParam String period) throws Exception {
+        return controller.calculateAverageReturns(ticker, period);
+    }
+    
 }

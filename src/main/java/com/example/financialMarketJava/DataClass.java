@@ -79,6 +79,8 @@ public class DataClass {
 		return ticker;
 	}
 	
-	
+	public float calculateAverageReturns (String ticker, String period) {
+		return Calculations.computeAverageReturn(ticker, period);
+	}
 	
 }

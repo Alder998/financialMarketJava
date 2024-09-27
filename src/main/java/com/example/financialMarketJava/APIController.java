@@ -40,5 +40,10 @@ public class APIController {
 		return data.getTicker(ticker, period);
     }
 
+    @Transactional
+    public float calculateAverageReturns(String ticker, String period) throws Exception {
+		return data.calculateAverageReturns(ticker, period);
+    }
+
 }
 

@@ -58,36 +58,36 @@ public class yfinanceScraper {
 	                // Small refinement to incorporate stock splits, when present
                 	String stockSplit = "NaN";
                 	float dividend = 0;
+	            	// set dividend and splits to avoid NullPointer Exception while updating for special
+	            	// Operations
+	            	historyRow.setDividend(dividend);
+	            	historyRow.setStockSplit(stockSplit);
+	            	historyRow.setDate(date);
 	                if (words.length < 7) {
 	                	if (Arrays.asList(words).contains("Splits")) {
 	                		splitsPresent = true;
 		                	stockSplit = words[3];
-			            	historyRow.setDate(date);
 			            	historyRow.setStockSplit(stockSplit);
-			            	// set dividend to avoid NullPointer Exception while updating for special
-			            	// Operations
-			            	historyRow.setDividend(dividend);
 	                	}
 	                	if (Arrays.asList(words).contains("Dividend")) {
 	                		dividendsPresent = true;
 	                		dividend = Float.parseFloat(words[3]);
-			            	historyRow.setDate(date);
 			            	historyRow.setDividend(dividend);
-			            	// set Stock Split to avoid NullPointer Exception while updating for special
-			            	// Operations
-			            	historyRow.setStockSplit(stockSplit);
 	                	}
 	                }
 	                else {
 		                float open = Float.parseFloat(words[3].replace(",", ""));
 		    	        float high = Float.parseFloat(words[4].replace(",", ""));
 		                float low = Float.parseFloat(words[5].replace(",", ""));
-		                float close = Float.parseFloat(words[6].replace(",", ""));
-		                float adjClose = Float.parseFloat(words[7].replace(",", ""));
-		                // Better to add an if, to avoid to have an error if volume is not available
+		                float close = Float.parseFloat(words[6].replace(",", "").replace("<", "").replace(">", ""));
+		                // Better to add an if, to avoid to have an error if volume or Adjusted Close are not available
 		                // (it may be not available for very old dates)
+	                	float adjClose = 0.0f;
+		                if (words.length > 7 && !words[7].contains("-") && !words[7].contains("<")) {
+		                	adjClose = Float.parseFloat(words[7].replace(",", ""));
+		                }
 	                	long volume = 0;
-		                if (words.length > 8) {
+		                if (words.length > 8 && !words[8].contains("-") && !words[8].contains(">")) {
 			                volume = Long.parseLong(words[8].replace(",", ""));
 		                }
 		                
