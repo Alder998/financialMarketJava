@@ -83,4 +83,8 @@ public class DataClass {
 		return Calculations.computeAverageReturn(ticker, period);
 	}
 	
+	public double calculateStdDeviation (String ticker, String period) {
+		return Calculations.computeReturnStdDeviation(ticker, period);
+	}
+	
 }

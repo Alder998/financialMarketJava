@@ -18,7 +18,18 @@ public class Calculations {
         return mean;
 	}
 	
-	public static float computeAverageReturn(String ticker, String period) {
+	public static double computeStdDeviation (ArrayList<Float> numberList) {
+		float mean = computeMean(numberList);
+		float sum = 0.0f;
+        for (Float value : numberList) {
+            sum += Math.pow((value - mean), 2);
+        }
+        double variance = sum / numberList.size();
+        double stdDeviation = Math.sqrt(variance); 
+        return stdDeviation;
+	}
+	
+	public static ArrayList<Float> getReturnDiff(String ticker, String period) {
 		
 		// Get the stock quote's time series
 		ArrayList<HistoricalTimeSeries> tsData =  yfinanceScraper.getHistoricalValues(ticker, period);
@@ -34,8 +45,19 @@ public class Calculations {
 			returnDiff.add(diff);
 		}
 		// Compute the mean
-		float averageReturns = computeMean(returnDiff);
-		return averageReturns;
+		return returnDiff;
+	}
+	
+	public static float computeAverageReturn (String ticker, String period) {
+		ArrayList<Float> returns = getReturnDiff (ticker, period);
+		// Get the mean
+		return computeMean(returns);
+	}
+	
+	public static double computeReturnStdDeviation (String ticker, String period) {
+		ArrayList<Float> returns = getReturnDiff (ticker, period);
+		// Get the mean
+		return computeStdDeviation(returns);
 	}
 	
 }

@@ -47,4 +47,9 @@ public class APIEndPoint {
         return controller.calculateAverageReturns(ticker, period);
     }
     
+    @GetMapping("/api/std")
+    public double calculateStdDeviation(@RequestParam String ticker, @RequestParam String period) throws Exception {
+        return controller.calculateStdDeviation(ticker, period);
+    }
+    
 }

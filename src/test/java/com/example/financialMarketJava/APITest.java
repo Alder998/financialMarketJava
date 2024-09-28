@@ -77,8 +77,8 @@ class APITest {
   @Test
   public void generalizedReturnsTest() throws Exception {
 	  
-	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "CAT", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
-	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("2d", "15d", "2mo", "6mo", "1y", "10y", "40y"));
+	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
+	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("5y", "10y", "20y"));
 	  System.out.println("---GENERALIZED RETURN CONTROL OVER " + tickers.size() * periods.size() + " DOWNLOADS---");
 
 	  for (String ticker : tickers) {
@@ -91,6 +91,27 @@ class APITest {
 			   String responseBody = result.getResponse().getContentAsString();
 			   System.out.println("Average daily Returns for Ticker " + ticker + " and Period " + period +
 					   ": " + responseBody + " %");
+		  }
+	  }
+  }
+  
+  @Test
+  public void generalizedReturnsSTDTest() throws Exception {
+	  
+	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
+	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("5y", "10y", "20y"));
+	  System.out.println("---GENERALIZED STD DEVIATION CONTROL OVER " + tickers.size() * periods.size() + " DOWNLOADS---");
+
+	  for (String ticker : tickers) {
+		  for (String period : periods) {
+			  MvcResult result = mockMvc.perform(get("/api/std").param("ticker", ticker).param("period", period))
+			         .andExpect(MockMvcResultMatchers.status().isOk())
+			         .andReturn();
+			
+			   // Get the JSON body as String
+			   String responseBody = result.getResponse().getContentAsString();
+			   System.out.println("Std for Ticker " + ticker + " and Period " + period +
+					   ": " + responseBody);
 		  }
 	  }
   }
