@@ -115,5 +115,25 @@ class APITest {
 		  }
 	  }
   }
+  
+  @Test
+  public void calculateCovariance() throws Exception {
+	  String ticker1 = "AAPL";
+	  String ticker2 = "AMZN";
+	  String period = "10y";
+	  MvcResult result = mockMvc.perform(get("/api/covariance")
+			  .param("ticker1", ticker1)
+			  .param("ticker2", ticker2)
+			  .param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println("Covariance between Ticker: " + ticker1 +
+			   " and Ticker: " + ticker2 +
+			   " and Period " + period + ": " + responseBody);
+  }
+  
     
 }

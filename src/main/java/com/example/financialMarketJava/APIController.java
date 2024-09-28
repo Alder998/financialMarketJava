@@ -49,6 +49,11 @@ public class APIController {
     public double calculateStdDeviation(String ticker, String period) throws Exception {
 		return data.calculateStdDeviation(ticker, period);
     }
+    
+    @Transactional
+    public float calculateCovariance (String ticker1, String ticker2, String period) throws Exception {
+		return data.calculateCovariance (ticker1, ticker2, period);
+    }
 
 }
 

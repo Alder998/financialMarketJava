@@ -87,4 +87,8 @@ public class DataClass {
 		return Calculations.computeReturnStdDeviation(ticker, period);
 	}
 	
+	public float calculateCovariance (String ticker1, String ticker2, String period) {
+		return Calculations.computeReturnCovariance(ticker1, ticker2, period);
+	}
+	
 }

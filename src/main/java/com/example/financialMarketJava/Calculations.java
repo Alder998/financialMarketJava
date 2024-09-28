@@ -29,6 +29,24 @@ public class Calculations {
         return stdDeviation;
 	}
 	
+	public static float computeCovariance (ArrayList<Float> numberList1, ArrayList<Float> numberList2) {
+		
+		// The two number Lists must be of the same length (this must be a control, since for trading days
+		// and stuff like this, it may be possible that two series have two different lengths.
+		
+		// Compute the two means
+		float mean1 = computeMean(numberList1);
+		float mean2 = computeMean(numberList2);
+		
+		float sumCov = 0.0f;
+		for (int i = 0; i < numberList1.size(); i++) {
+			sumCov = (numberList1.get(i) - mean1) * (numberList2.get(i) - mean2);
+		}
+        float covariance = sumCov / numberList1.size();
+        
+        return covariance;
+	}
+	
 	public static ArrayList<Float> getReturnDiff(String ticker, String period) {
 		
 		// Get the stock quote's time series
@@ -59,6 +77,25 @@ public class Calculations {
 		// Get the mean
 		return computeStdDeviation(returns);
 	}
+	
+	public static float computeReturnCovariance (String ticker1, String ticker2, String period) {
+		ArrayList<Float> returns1 = getReturnDiff (ticker1, period);
+		ArrayList<Float> returns2 = getReturnDiff (ticker2, period);
+		
+		// align the sizes (CHANGE IN FUTURE)
+		if (returns1.size() > returns2.size()) {
+			returns1 = new ArrayList<Float>(returns1.subList(returns1.size()-returns2.size(), returns1.size()-1));
+		}
+		else if (returns2.size() > returns1.size()) {
+			returns2 = new ArrayList<Float>(returns2.subList(returns2.size()-returns1.size(), returns2.size()-1));
+		}
+		float covariance = computeCovariance(returns1, returns2);
+		
+		return covariance;
+	}
+	
+	// Here it comes the though stuff: Variance-Covariance Matrix
+	
 	
 }
 

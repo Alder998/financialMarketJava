@@ -52,4 +52,9 @@ public class APIEndPoint {
         return controller.calculateStdDeviation(ticker, period);
     }
     
+    @GetMapping("/api/covariance")
+    public float calculateCovariance(@RequestParam String ticker1, @RequestParam String ticker2, @RequestParam String period) throws Exception {
+        return controller.calculateCovariance(ticker1, ticker2, period);
+    }
+    
 }
