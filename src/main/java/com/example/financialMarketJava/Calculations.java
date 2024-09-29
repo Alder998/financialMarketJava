@@ -40,7 +40,7 @@ public class Calculations {
 		
 		float sumCov = 0.0f;
 		for (int i = 0; i < numberList1.size(); i++) {
-			sumCov = (numberList1.get(i) - mean1) * (numberList2.get(i) - mean2);
+			sumCov += (numberList1.get(i) - mean1) * (numberList2.get(i) - mean2);
 		}
         float covariance = sumCov / numberList1.size();
         

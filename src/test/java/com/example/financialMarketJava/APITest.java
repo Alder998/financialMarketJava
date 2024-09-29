@@ -119,8 +119,8 @@ class APITest {
   @Test
   public void calculateCovariance() throws Exception {
 	  String ticker1 = "AAPL";
-	  String ticker2 = "AMZN";
-	  String period = "10y";
+	  String ticker2 = "AAPL";
+	  String period = "20y";
 	  MvcResult result = mockMvc.perform(get("/api/covariance")
 			  .param("ticker1", ticker1)
 			  .param("ticker2", ticker2)
