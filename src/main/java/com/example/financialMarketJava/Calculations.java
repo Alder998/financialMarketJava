@@ -3,6 +3,7 @@
 package com.example.financialMarketJava;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import Objects.HistoricalTimeSeries;
 import financialData.yfinanceScraper;
@@ -92,6 +93,22 @@ public class Calculations {
 		float covariance = computeCovariance(returns1, returns2);
 		
 		return covariance;
+	}
+	
+	public static HashMap<String, Float> computeReturnCovariances (String ticker1, ArrayList<String> tickers, String period) {
+		
+		// for future purposes, it may be good to see this method as the creation of a row of the variance-covariance matrix
+		// therefore, add to the array of stocks the stock itself
+		if (!tickers.contains(ticker1)) {
+			tickers.add(ticker1);
+		}
+		
+		HashMap<String, Float> covariances = new HashMap<String, Float>();
+		for (String singleTicker : tickers) {
+			float singleCovariance = computeReturnCovariance(singleTicker, ticker1, period);
+			covariances.put(singleTicker, singleCovariance);
+		}
+		return covariances;
 	}
 	
 	// Here it comes the though stuff: Variance-Covariance Matrix
