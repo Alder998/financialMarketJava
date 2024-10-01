@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
 import Objects.Ticker;
 import financialData.yfinanceAPI;
@@ -89,6 +90,10 @@ public class DataClass {
 	
 	public float calculateCovariance (String ticker1, String ticker2, String period) {
 		return Calculations.computeReturnCovariance(ticker1, ticker2, period);
+	}
+	
+	public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period) {
+		return Calculations.computeReturnCovariances(ticker1, tickers, period);
 	}
 	
 }

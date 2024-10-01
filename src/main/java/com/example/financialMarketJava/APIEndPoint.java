@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
 import Objects.Ticker;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -55,6 +56,11 @@ public class APIEndPoint {
     @GetMapping("/api/covariance")
     public float calculateCovariance(@RequestParam String ticker1, @RequestParam String ticker2, @RequestParam String period) throws Exception {
         return controller.calculateCovariance(ticker1, ticker2, period);
+    }
+    
+    @GetMapping("/api/covariances")
+    public CovarianceStructure calculateCovariances(@RequestParam String ticker1, @RequestParam ArrayList<String> tickers, @RequestParam String period) throws Exception {
+        return controller.calculateCovariances(ticker1, tickers, period);
     }
     
 }

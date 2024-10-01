@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
+import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
 import Objects.Ticker;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -53,6 +54,11 @@ public class APIController {
     @Transactional
     public float calculateCovariance (String ticker1, String ticker2, String period) throws Exception {
 		return data.calculateCovariance (ticker1, ticker2, period);
+    }
+    
+    @Transactional
+    public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period) throws Exception {
+		return data.calculateCovariances (ticker1, tickers, period);
     }
 
 }

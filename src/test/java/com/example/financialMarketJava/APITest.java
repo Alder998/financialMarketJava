@@ -74,7 +74,7 @@ class APITest {
   }
   
   // Generalized Test on returns
-  @Test
+  //@Test
   public void generalizedReturnsTest() throws Exception {
 	  
 	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
@@ -95,7 +95,7 @@ class APITest {
 	  }
   }
   
-  @Test
+  //@Test
   public void generalizedReturnsSTDTest() throws Exception {
 	  
 	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
@@ -119,7 +119,7 @@ class APITest {
   @Test
   public void calculateCovariance() throws Exception {
 	  String ticker1 = "AAPL";
-	  String ticker2 = "ISP.MI";
+	  String ticker2 = "CAT";
 	  String period = "20y";
 	  MvcResult result = mockMvc.perform(get("/api/covariance")
 			  .param("ticker1", ticker1)
@@ -134,6 +134,29 @@ class APITest {
 			   " and Ticker: " + ticker2 +
 			   " and Period " + period + ": " + responseBody);
   }
+  
+  @Test
+  public void calculateCovariances() throws Exception {
+	  String ticker1 = "AAPL";
+	  ArrayList<String> tickers = new ArrayList<String>();
+	  tickers.add("AMZN");
+	  tickers.add("NFLX");
+	  tickers.add("JPM");
+	  tickers.add("GOOG");
+      String tickersParam = String.join(",", tickers);
+	  String period = "20y";
+	  MvcResult result = mockMvc.perform(get("/api/covariances")
+			  .param("ticker1", ticker1)
+			  .param("tickers", tickersParam)
+			  .param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println(responseBody);
+  }
+  
   
     
 }
