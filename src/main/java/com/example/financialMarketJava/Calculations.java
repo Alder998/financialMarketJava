@@ -86,10 +86,10 @@ public class Calculations {
 		
 		// align the sizes (CHANGE IN FUTURE)
 		if (returns1.size() > returns2.size()) {
-			returns1 = new ArrayList<Float>(returns1.subList(returns1.size()-returns2.size(), returns1.size()-1));
+			returns1 = new ArrayList<Float>(returns1.subList(returns1.size()-returns2.size(), returns1.size()));
 		}
 		else if (returns2.size() > returns1.size()) {
-			returns2 = new ArrayList<Float>(returns2.subList(returns2.size()-returns1.size(), returns2.size()-1));
+			returns2 = new ArrayList<Float>(returns2.subList(returns2.size()-returns1.size(), returns2.size()));
 		}
 		float covariance = computeCovariance(returns1, returns2);
 		
