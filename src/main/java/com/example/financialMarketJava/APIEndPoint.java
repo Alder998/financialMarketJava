@@ -63,4 +63,9 @@ public class APIEndPoint {
         return controller.calculateCovariances(ticker1, tickers, period);
     }
     
+    @GetMapping("/api/varianceCovarianceMatrix")
+    public float[][] generateVarianceCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period) throws Exception {
+        return controller.generateVarianceCovarianceMatrix(tickers, period);
+    }
+    
 }

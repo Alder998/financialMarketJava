@@ -95,11 +95,11 @@ class APITest {
 	  }
   }
   
-  //@Test
+  @Test
   public void generalizedReturnsSTDTest() throws Exception {
 	  
-	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
-	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("5y", "10y", "20y"));
+	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AMZN", "NFLX", "JPM", "GOOG"));
+	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("20y"));
 	  System.out.println("---GENERALIZED STD DEVIATION CONTROL OVER " + tickers.size() * periods.size() + " DOWNLOADS---");
 
 	  for (String ticker : tickers) {
@@ -116,7 +116,7 @@ class APITest {
 	  }
   }
   
-  @Test
+  //@Test
   public void calculateCovariance() throws Exception {
 	  String ticker1 = "AAPL";
 	  String ticker2 = "ISP.MI";
@@ -135,7 +135,7 @@ class APITest {
 			   " and Period " + period + ": " + responseBody);
   }
   
-  @Test
+  //@Test
   public void calculateCovariances() throws Exception {
 	  String ticker1 = "AAPL";
 	  ArrayList<String> tickers = new ArrayList<String>();
@@ -147,6 +147,26 @@ class APITest {
 	  String period = "20y";
 	  MvcResult result = mockMvc.perform(get("/api/covariances")
 			  .param("ticker1", ticker1)
+			  .param("tickers", tickersParam)
+			  .param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println(responseBody);
+  }
+  
+  @Test
+  public void generateVarianceCovarianceMatrix() throws Exception {
+	  ArrayList<String> tickers = new ArrayList<String>();
+	  tickers.add("AMZN");
+	  tickers.add("NFLX");
+	  tickers.add("JPM");
+	  tickers.add("GOOG");
+      String tickersParam = String.join(",", tickers);
+	  String period = "20y";
+	  MvcResult result = mockMvc.perform(get("/api/varianceCovarianceMatrix")
 			  .param("tickers", tickersParam)
 			  .param("period", period))
              .andExpect(MockMvcResultMatchers.status().isOk())

@@ -118,8 +118,28 @@ public class Calculations {
 	}
 	
 	// Here it comes the though stuff: Variance-Covariance Matrix
-	
-	
+	public static float[][] getVarianceCovarianceMatrix (ArrayList<String> tickers, String period) {
+		float[][] varianceCovarianceMatrix = new float[tickers.size()][tickers.size()];
+		
+		// Get the single covariance structure
+		int row = 0; // this counters are to populate the matrix with values
+		for (String ticker : tickers) {
+			// Add some logging
+			System.out.println("Computing Variance-Covariance Matrix for Ticker: " + ticker +
+					" - Processing stock: " + (row + 1) + " out of " + tickers.size() + " Tickers" );
+			CovarianceStructure singleCovarianceStructure = computeReturnCovariances(ticker, tickers, period);
+			// Unpack the single covariances, update the row number
+			int column = 0;
+			for (String tickerCovariance : tickers) {
+				float covariance = singleCovarianceStructure.getCovariances().get(tickerCovariance);
+				varianceCovarianceMatrix[row][column] = covariance;
+				// Update columns
+				column ++;
+			}
+			row ++;
+		}
+		return varianceCovarianceMatrix;
+	}
 }
 
 

@@ -96,4 +96,8 @@ public class DataClass {
 		return Calculations.computeReturnCovariances(ticker1, tickers, period);
 	}
 	
+	public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period) {
+		return Calculations.getVarianceCovarianceMatrix(tickers, period);
+	}
+	
 }

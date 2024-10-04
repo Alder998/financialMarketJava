@@ -60,6 +60,9 @@ public class APIController {
     public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period) throws Exception {
 		return data.calculateCovariances (ticker1, tickers, period);
     }
-
+    @Transactional
+    public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period) throws Exception {
+    	return data.generateVarianceCovarianceMatrix(tickers, period);
+    }
 }
 
