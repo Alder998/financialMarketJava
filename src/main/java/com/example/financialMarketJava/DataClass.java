@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
 import org.springframework.stereotype.Component;
-
+import org.springframework.jdbc.core.JdbcTemplate;
 import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
 import Objects.Ticker;
@@ -99,5 +98,7 @@ public class DataClass {
 	public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period) {
 		return Calculations.getVarianceCovarianceMatrix(tickers, period);
 	}
+	
+	
 	
 }

@@ -66,6 +66,19 @@
     	<artifactId>jsoup</artifactId>
     	<version>1.18.1</version>
 	</dependency>
+	
+	<!--Postgres Library to manage Postgres Database-->
+	<dependency>
+    	<groupId>org.postgresql</groupId>
+    	<artifactId>postgresql</artifactId>
+    	<scope>runtime</scope>
+	</dependency>
+	
+	<!--JDBC Library to allow the applicaton to execute queries-->
+	<dependency>
+    	<groupId>org.springframework.boot</groupId>
+    	<artifactId>spring-boot-starter-jdbc</artifactId>
+	</dependency>
 
 	</dependencies>
 

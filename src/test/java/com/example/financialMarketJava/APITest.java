@@ -98,7 +98,7 @@ class APITest {
   @Test
   public void generalizedReturnsSTDTest() throws Exception {
 	  
-	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AMZN", "NFLX", "JPM", "GOOG"));
+	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
 	  ArrayList<String> periods = new ArrayList<>(Arrays.asList("20y"));
 	  System.out.println("---GENERALIZED STD DEVIATION CONTROL OVER " + tickers.size() * periods.size() + " DOWNLOADS---");
 
@@ -160,10 +160,11 @@ class APITest {
   @Test
   public void generateVarianceCovarianceMatrix() throws Exception {
 	  ArrayList<String> tickers = new ArrayList<String>();
-	  tickers.add("AMZN");
-	  tickers.add("NFLX");
-	  tickers.add("JPM");
-	  tickers.add("GOOG");
+	  tickers.add("AAPL");
+	  tickers.add("ISP.MI");
+	  tickers.add("STLA");
+	  tickers.add("CBK.DE");
+	  tickers.add("IBE.MC");
       String tickersParam = String.join(",", tickers);
 	  String period = "20y";
 	  MvcResult result = mockMvc.perform(get("/api/varianceCovarianceMatrix")
@@ -176,7 +177,6 @@ class APITest {
 	   String responseBody = result.getResponse().getContentAsString();
 	   System.out.println(responseBody);
   }
-  
   
     
 }
