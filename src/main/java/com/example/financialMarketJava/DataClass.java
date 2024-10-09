@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -114,11 +117,17 @@ public class DataClass {
 			        return DataClass_Utils.extractMatrix(rs);
 			    });
 		} catch (DataAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	   return matrixRows.toArray(new float[matrixRows.size()][]);
 	}
 	
+	public void createCovarianceMatrix (ArrayList<String> tickers, String period) throws DataAccessException {
+		String sql = "INSERT INTO VarianceCovarianceMatrix (period, covariances) VALUES (?, ?)";
+		float[][] covarianceMatrix = new float[tickers.size()][tickers.size()];
+		covarianceMatrix = generateVarianceCovarianceMatrix(tickers, period);
+
+        jdbcTemplate.update(sql, period, covarianceMatrix);
+	}
 	
 }

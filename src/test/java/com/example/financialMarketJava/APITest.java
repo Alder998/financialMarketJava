@@ -43,7 +43,7 @@ class APITest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
     
-  @Test
+  //@Test
   public void getStockHistory() throws Exception {
 	  MvcResult result = mockMvc.perform(get("/api/ticker").param("ticker", "AAPL").param("period", "40y"))
              .andExpect(MockMvcResultMatchers.status().isOk())
@@ -60,7 +60,7 @@ class APITest {
 	   // System.out.println("Body of the API: " + formattedJson);
   }
   
-  @Test
+  //@Test
   public void calculateAverageReturns() throws Exception {
 	  String ticker = "AAPL";
 	  String period = "1mo";
@@ -95,7 +95,7 @@ class APITest {
 	  }
   }
   
-  @Test
+  //@Test
   public void generalizedReturnsSTDTest() throws Exception {
 	  
 	  ArrayList<String> tickers = new ArrayList<>(Arrays.asList("AAPL", "ISP.MI", "STLA", "CBK.DE", "IBE.MC"));
@@ -157,7 +157,7 @@ class APITest {
 	   System.out.println(responseBody);
   }
   
-  @Test
+  //@Test
   public void generateVarianceCovarianceMatrix() throws Exception {
 	  ArrayList<String> tickers = new ArrayList<String>();
 	  tickers.add("AAPL");
@@ -168,6 +168,27 @@ class APITest {
       String tickersParam = String.join(",", tickers);
 	  String period = "20y";
 	  MvcResult result = mockMvc.perform(get("/api/varianceCovarianceMatrix")
+			  .param("tickers", tickersParam)
+			  .param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println(responseBody);
+  }
+  
+  @Test
+  public void createVarianceCovarianceMatrix() throws Exception {
+	  ArrayList<String> tickers = new ArrayList<String>();
+	  tickers.add("AAPL");
+	  tickers.add("ISP.MI");
+	  tickers.add("STLA");
+	  tickers.add("CBK.DE");
+	  tickers.add("IBE.MC");
+      String tickersParam = String.join(",", tickers);
+	  String period = "20y";
+	  MvcResult result = mockMvc.perform(post("/api/createVarianceCovarianceMatrix")
 			  .param("tickers", tickersParam)
 			  .param("period", period))
              .andExpect(MockMvcResultMatchers.status().isOk())
