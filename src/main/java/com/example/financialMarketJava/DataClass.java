@@ -1,10 +1,13 @@
 package com.example.financialMarketJava;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
@@ -14,11 +17,15 @@ import financialData.yfinanceScraper;
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 // The Data Class is where all the main operations will be performed
 
 @Component
 public class DataClass {
+	
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 	
 	// This method may be deleted, when the project structure would be set up, and therefore will be sure
 	// that the project is working
@@ -99,6 +106,19 @@ public class DataClass {
 		return Calculations.getVarianceCovarianceMatrix(tickers, period);
 	}
 	
+	public float[][] getVarianceCovarianceMatrix (ArrayList<String> tickers, String period) throws DataAccessException {
+		String sql = "SELECT * FROM VarianceCovarianceMatrix";
+		List<float[]> matrixRows = null;
+		try {
+			matrixRows = jdbcTemplate.query(sql, (ResultSet rs) -> {
+			        return DataClass_Utils.extractMatrix(rs);
+			    });
+		} catch (DataAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   return matrixRows.toArray(new float[matrixRows.size()][]);
+	}
 	
 	
 }

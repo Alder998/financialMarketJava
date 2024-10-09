@@ -1,9 +1,12 @@
 package com.example.financialMarketJava;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import Objects.HistoricalTimeSeries;
@@ -238,4 +241,19 @@ public class DataClass_Utils {
         return finalHistory;
 	}
 	
+    public static List<float[]> extractMatrix(ResultSet rs) throws SQLException {
+        List<float[]> rows = new ArrayList<>();
+
+        int columnCount = rs.getMetaData().getColumnCount(); 
+        
+        while (rs.next()) {
+            float[] row = new float[columnCount];
+            
+            for (int i = 1; i <= columnCount; i++) {
+                row[i - 1] = rs.getFloat(i); 
+            }
+            rows.add(row);
+        }
+        return rows;
+    }
 }
