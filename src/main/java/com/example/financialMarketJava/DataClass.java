@@ -123,11 +123,19 @@ public class DataClass {
 	}
 	
 	public void createCovarianceMatrix (ArrayList<String> tickers, String period) throws DataAccessException {
-		String sql = "INSERT INTO VarianceCovarianceMatrix (period, covariances) VALUES (?, ?)";
+		String sql = "INSERT INTO VarianceCovarianceMatrix (period, stockNumber, VarianceCovarianceMatrix) VALUES (?, ?, ?)";
 		float[][] covarianceMatrix = new float[tickers.size()][tickers.size()];
 		covarianceMatrix = generateVarianceCovarianceMatrix(tickers, period);
-
-        jdbcTemplate.update(sql, period, covarianceMatrix);
+		// Convert the variance Covariance Matrix into a String into a JSON
+		ObjectMapper objectMapper = new ObjectMapper();
+        String covarianceMatrixJson = null;
+        try {
+            covarianceMatrixJson = objectMapper.writeValueAsString(covarianceMatrix);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error Serializing the Variance-Covariance Matrix in JSON!") {};
+        }
+        jdbcTemplate.update(sql, period, tickers.size(), covarianceMatrixJson);
 	}
 	
 }
