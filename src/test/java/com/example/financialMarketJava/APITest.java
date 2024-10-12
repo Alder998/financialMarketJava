@@ -178,7 +178,7 @@ class APITest {
 	   System.out.println(responseBody);
   }
   
-  @Test
+  //@Test
   public void createVarianceCovarianceMatrix() throws Exception {
 	  ArrayList<String> tickers = new ArrayList<String>();
 	  tickers.add("AAPL");
@@ -191,6 +191,23 @@ class APITest {
 	  MvcResult result = mockMvc.perform(post("/api/createVarianceCovarianceMatrix")
 			  .param("tickers", tickersParam)
 			  .param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+   
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println(responseBody);
+  }
+  
+  @Test
+  public void createVarianceCovarianceMatrixAndReturnFromDatabase() throws Exception {
+	  String stockIndex = "SP500";
+	  String subList = "10";
+	  String period = "20y";
+	  MvcResult result = mockMvc.perform(post("/api/portfolioConstructionComponents")
+			  .param("period", period)
+			  .param("stockIndex", stockIndex)
+			  .param("subList", subList))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    

@@ -9,6 +9,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataAccessException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Objects.HistoricalTimeSeries;
 
 public class DataClass_Utils {
@@ -233,27 +237,10 @@ public class DataClass_Utils {
                 	finalHistory.add(obj1);
                 }
             }
-            
             // Sort the Stock List
-            finalHistory.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate()));
-            
+            finalHistory.sort((s1, s2) -> s1.getDate().compareTo(s2.getDate())); 
         }
         return finalHistory;
 	}
 	
-    public static List<float[]> extractMatrix(ResultSet rs) throws SQLException {
-        List<float[]> rows = new ArrayList<>();
-
-        int columnCount = rs.getMetaData().getColumnCount(); 
-        
-        while (rs.next()) {
-            float[] row = new float[columnCount];
-            
-            for (int i = 1; i <= columnCount; i++) {
-                row[i - 1] = rs.getFloat(i); 
-            }
-            rows.add(row);
-        }
-        return rows;
-    }
 }

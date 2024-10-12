@@ -68,5 +68,10 @@ public class APIController {
     public void createCovarianceMatrix (ArrayList<String> tickers, String period) throws Exception {
     	data.createCovarianceMatrix (tickers, period);
     }
+    
+    @Transactional
+    public void createVarianceCovarianceMatrixAndReturnFromDatabase (String period, String stockIndex, Integer subList) throws Exception {
+    	data.createVarianceCovarianceMatrixAndReturnFromDatabase (period, stockIndex, subList);
+    }
 }
 

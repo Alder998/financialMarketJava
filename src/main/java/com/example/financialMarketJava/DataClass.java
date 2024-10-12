@@ -7,6 +7,8 @@ import java.util.Calendar;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,33 +111,101 @@ public class DataClass {
 		return Calculations.getVarianceCovarianceMatrix(tickers, period);
 	}
 	
-	public float[][] getVarianceCovarianceMatrix (ArrayList<String> tickers, String period) throws DataAccessException {
-		String sql = "SELECT * FROM VarianceCovarianceMatrix";
-		List<float[]> matrixRows = null;
-		try {
-			matrixRows = jdbcTemplate.query(sql, (ResultSet rs) -> {
-			        return DataClass_Utils.extractMatrix(rs);
-			    });
-		} catch (DataAccessException e) {
-			e.printStackTrace();
+	// Methods to get a stock Sample from SQL
+	public ArrayList<String> getStockSample (String type, Integer subList) {
+		String sql = "";
+		if (type.toLowerCase().equals("allstocks")) {
+			sql = "SELECT Ticker FROM AllStocksTraded";
 		}
-	   return matrixRows.toArray(new float[matrixRows.size()][]);
+		else if (type.toLowerCase().equals("sp500")) {
+			sql = "SELECT Ticker FROM SP500Ticker";
+		}
+	  List<String> tickers = jdbcTemplate.query(
+	            sql, 
+	            (rs, rowNum) -> rs.getString("Ticker")
+	        );
+	
+	  // Convert to ArrayList<String>
+	  ArrayList<String> tickerList = new ArrayList<>(tickers);
+	  if (subList!=null) {
+		  tickerList = new ArrayList<String>(tickerList.subList(0, subList));
+	  }
+	  return tickerList;
 	}
 	
+	// CRUD methods to get the Variance-Covariance Matrix
+	// get Method
+	public float[][] getVarianceCovarianceMatrixByPeriod (String period) throws DataAccessException, JsonMappingException, JsonProcessingException {
+		String sql = "SELECT VarianceCovarianceMatrix FROM VarianceCovarianceMatrix WHERE period = ?";
+		String covarianceMatrixJson = jdbcTemplate.queryForObject(sql, String.class, new Object[]{period});
+		ObjectMapper objectMapper = new ObjectMapper();
+		float[][] covarianceMatrix = objectMapper.readValue(covarianceMatrixJson, float[][].class);
+		return covarianceMatrix;
+	}
+	
+	// Create Method
 	public void createCovarianceMatrix (ArrayList<String> tickers, String period) throws DataAccessException {
-		String sql = "INSERT INTO VarianceCovarianceMatrix (period, stockNumber, VarianceCovarianceMatrix) VALUES (?, ?, ?)";
+		String sql = "INSERT INTO VarianceCovarianceMatrix (period, stockNumber, tickers, VarianceCovarianceMatrix) VALUES (?,?,?,?)";
 		float[][] covarianceMatrix = new float[tickers.size()][tickers.size()];
 		covarianceMatrix = generateVarianceCovarianceMatrix(tickers, period);
-		// Convert the variance Covariance Matrix into a String into a JSON
+		// Convert the variance Covariance Matrix into a JSON String
 		ObjectMapper objectMapper = new ObjectMapper();
         String covarianceMatrixJson = null;
         try {
             covarianceMatrixJson = objectMapper.writeValueAsString(covarianceMatrix);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new DataAccessException("Error Serializing the Variance-Covariance Matrix in JSON!") {};
         }
-        jdbcTemplate.update(sql, period, tickers.size(), covarianceMatrixJson);
+		// Convert the Ticker Array into a JSON String
+        String tickersJSON = null;
+        try {
+        	tickersJSON = objectMapper.writeValueAsString(tickers);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Update Command that adds a row to the SQL Table
+        jdbcTemplate.update(sql, period, tickers.size(), tickersJSON, covarianceMatrixJson);
+	}
+	
+	// CRUD methods to create and Store Returns
+	public void createReturn (String ticker, String period) {
+		// SQL String
+		String sql = "INSERT INTO Returns (period, ticker, return) VALUES (?,?,?)";
+		// Compute average return
+		float singleReturn = this.calculateAverageReturns(period, ticker);
+		// Update SQL
+        jdbcTemplate.update(sql, period, ticker, singleReturn);
+	}
+	
+	public void createReturns (ArrayList<String> tickers, String period) {
+		// Iterate through the Ticker's list
+		int iteration = 0;
+		// Logging
+		System.out.println("Calculating Returns: Processing Ticker " + iteration + " Of " + tickers.size() + " Tickers");
+		for (String ticker : tickers) {
+			this.createReturn (ticker, period);
+			iteration++;
+		}
+	}
+	
+	// get method for Returns
+	public ArrayList<Float> getReturnsByPeriod (String period) {
+		String sql = "SELECT return FROM Returns WHERE period = ?";
+		  List<Float> returns = jdbcTemplate.query(
+		            sql,
+		            (rs, rowNum) -> rs.getFloat("Return"),
+		            new Object[]{period}
+		        );
+		return new ArrayList<Float>(returns);
+	}
+	
+	// Method to create a massive Variance-Covariance Matrix and return Table
+	public void createVarianceCovarianceMatrixAndReturnFromDatabase (String period, String stockIndex, Integer subList) {
+		// Get the Stock Index from Database
+		ArrayList<String> stockSample = this.getStockSample(stockIndex, subList);
+		// Compute the main Portfolio Driver Components
+		this.createReturns(stockSample, period);
+		this.createCovarianceMatrix(stockSample, period);
 	}
 	
 }

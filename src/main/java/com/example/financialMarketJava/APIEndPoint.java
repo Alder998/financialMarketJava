@@ -72,4 +72,10 @@ public class APIEndPoint {
     public void createCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period) throws Exception {
         controller.createCovarianceMatrix(tickers, period);
     }
+    
+    @PostMapping("/api/portfolioConstructionComponents")
+    public void createVarianceCovarianceMatrixAndReturnFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
+        controller.createVarianceCovarianceMatrixAndReturnFromDatabase(period, stockIndex, subList);
+    }
+
 }
