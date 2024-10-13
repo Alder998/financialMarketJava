@@ -99,16 +99,16 @@ public class DataClass {
 		return Calculations.computeReturnStdDeviation(ticker, period);
 	}
 	
-	public float calculateCovariance (String ticker1, String ticker2, String period) {
-		return Calculations.computeReturnCovariance(ticker1, ticker2, period);
+	public float calculateCovariance (String ticker1, String ticker2, String period, Boolean fromCached) {
+		return Calculations.computeReturnCovariance(ticker1, ticker2, period, fromCached);
 	}
 	
-	public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period) {
-		return Calculations.computeReturnCovariances(ticker1, tickers, period);
+	public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period, Boolean fromCached) {
+		return Calculations.computeReturnCovariances(ticker1, tickers, period, fromCached);
 	}
 	
-	public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period) {
-		return Calculations.getVarianceCovarianceMatrix(tickers, period);
+	public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period, Boolean fromCached) {
+		return Calculations.getVarianceCovarianceMatrix(tickers, period, fromCached);
 	}
 	
 	// Methods to get a stock Sample from SQL
@@ -144,10 +144,10 @@ public class DataClass {
 	}
 	
 	// Create Method
-	public void createCovarianceMatrix (ArrayList<String> tickers, String period) throws DataAccessException {
+	public void createCovarianceMatrix (ArrayList<String> tickers, String period, Boolean fromCached) throws DataAccessException {
 		String sql = "INSERT INTO VarianceCovarianceMatrix (period, stockNumber, tickers, VarianceCovarianceMatrix) VALUES (?,?,?,?)";
 		float[][] covarianceMatrix = new float[tickers.size()][tickers.size()];
-		covarianceMatrix = generateVarianceCovarianceMatrix(tickers, period);
+		covarianceMatrix = generateVarianceCovarianceMatrix(tickers, period, fromCached);
 		// Convert the variance Covariance Matrix into a JSON String
 		ObjectMapper objectMapper = new ObjectMapper();
         String covarianceMatrixJson = null;
@@ -205,7 +205,7 @@ public class DataClass {
 		ArrayList<String> stockSample = this.getStockSample(stockIndex, subList);
 		// Compute the main Portfolio Driver Components
 		this.createReturns(stockSample, period);
-		this.createCovarianceMatrix(stockSample, period);
+		this.createCovarianceMatrix(stockSample, period, true);
 	}
 	
 }

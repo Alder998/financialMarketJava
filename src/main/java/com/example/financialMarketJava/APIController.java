@@ -52,21 +52,21 @@ public class APIController {
     }
     
     @Transactional
-    public float calculateCovariance (String ticker1, String ticker2, String period) throws Exception {
-		return data.calculateCovariance (ticker1, ticker2, period);
+    public float calculateCovariance (String ticker1, String ticker2, String period, Boolean fromCached) throws Exception {
+		return data.calculateCovariance (ticker1, ticker2, period, fromCached);
     }
     
     @Transactional
-    public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period) throws Exception {
-		return data.calculateCovariances (ticker1, tickers, period);
+    public CovarianceStructure calculateCovariances (String ticker1, ArrayList<String> tickers, String period, Boolean fromCached) throws Exception {
+		return data.calculateCovariances (ticker1, tickers, period, fromCached);
     }
     @Transactional
-    public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period) throws Exception {
-    	return data.generateVarianceCovarianceMatrix(tickers, period);
+    public float[][] generateVarianceCovarianceMatrix (ArrayList<String> tickers, String period, Boolean fromCached) throws Exception {
+    	return data.generateVarianceCovarianceMatrix(tickers, period, fromCached);
     }
     @Transactional
-    public void createCovarianceMatrix (ArrayList<String> tickers, String period) throws Exception {
-    	data.createCovarianceMatrix (tickers, period);
+    public void createCovarianceMatrix (ArrayList<String> tickers, String period, Boolean fromCached) throws Exception {
+    	data.createCovarianceMatrix (tickers, period, fromCached);
     }
     
     @Transactional

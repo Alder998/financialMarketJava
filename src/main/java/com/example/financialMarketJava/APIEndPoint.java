@@ -54,23 +54,23 @@ public class APIEndPoint {
     }
     
     @GetMapping("/api/covariance")
-    public float calculateCovariance(@RequestParam String ticker1, @RequestParam String ticker2, @RequestParam String period) throws Exception {
-        return controller.calculateCovariance(ticker1, ticker2, period);
+    public float calculateCovariance(@RequestParam String ticker1, @RequestParam String ticker2, @RequestParam String period, @RequestParam Boolean fromCached) throws Exception {
+        return controller.calculateCovariance(ticker1, ticker2, period, fromCached);
     }
     
     @GetMapping("/api/covariances")
-    public CovarianceStructure calculateCovariances(@RequestParam String ticker1, @RequestParam ArrayList<String> tickers, @RequestParam String period) throws Exception {
-        return controller.calculateCovariances(ticker1, tickers, period);
+    public CovarianceStructure calculateCovariances(@RequestParam String ticker1, @RequestParam ArrayList<String> tickers, @RequestParam String period, @RequestParam Boolean fromCached) throws Exception {
+        return controller.calculateCovariances(ticker1, tickers, period, fromCached);
     }
     
     @GetMapping("/api/varianceCovarianceMatrix")
-    public float[][] generateVarianceCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period) throws Exception {
-        return controller.generateVarianceCovarianceMatrix(tickers, period);
+    public float[][] generateVarianceCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period, @RequestParam Boolean fromCached) throws Exception {
+        return controller.generateVarianceCovarianceMatrix(tickers, period, fromCached);
     }
     
     @PostMapping("/api/createVarianceCovarianceMatrix")
-    public void createCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period) throws Exception {
-        controller.createCovarianceMatrix(tickers, period);
+    public void createCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period, @RequestParam Boolean fromCached) throws Exception {
+        controller.createCovarianceMatrix(tickers, period, fromCached);
     }
     
     @PostMapping("/api/portfolioConstructionComponents")

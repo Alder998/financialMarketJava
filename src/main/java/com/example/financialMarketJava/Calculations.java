@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import Objects.CovarianceStructure;
+import Objects.HistoricalDataCache;
 import Objects.HistoricalTimeSeries;
 import financialData.yfinanceScraper;
 
@@ -51,8 +52,14 @@ public class Calculations {
 	
 	public static ArrayList<Float> getReturnDiff(String ticker, String period) {
 		
+		// check if the return Diff data is already in the cache
+		if (HistoricalDataCache.get(ticker) != null) {
+			return HistoricalDataCache.get(ticker);
+		}
+		else {
 		// Get the stock quote's time series
 		ArrayList<HistoricalTimeSeries> tsData =  yfinanceScraper.getHistoricalValues(ticker, period);
+		
 		// Iterate through the Objects in the time series data
 		ArrayList<Float> returns = new ArrayList<Float>();
 		for (HistoricalTimeSeries singleQuote : tsData) {
@@ -65,7 +72,10 @@ public class Calculations {
 			returnDiff.add(diff);
 		}
 		// Compute the mean
+		// Save the data in the cache
+		HistoricalDataCache.put(ticker, returnDiff);
 		return returnDiff;
+		}
 	}
 	
 	public static float computeAverageReturn (String ticker, String period) {
@@ -80,10 +90,18 @@ public class Calculations {
 		return computeStdDeviation(returns);
 	}
 	
-	public static float computeReturnCovariance (String ticker1, String ticker2, String period) {
-		ArrayList<Float> returns1 = getReturnDiff (ticker1, period);
-		ArrayList<Float> returns2 = getReturnDiff (ticker2, period);
-		
+	public static float computeReturnCovariance (String ticker1, String ticker2, String period, Boolean fromCached) {
+		ArrayList<Float> returns1 = new ArrayList<Float>();
+		ArrayList<Float> returns2 = new ArrayList<Float>();
+		if (fromCached) {
+			returns1 = HistoricalDataCache.get(ticker1);
+			returns2 = HistoricalDataCache.get(ticker2);
+		}
+		else {
+			returns1 = getReturnDiff (ticker1, period);
+			returns2 = getReturnDiff (ticker2, period);
+		}
+
 		// align the sizes (CHANGE IN FUTURE)
 		if (returns1.size() > returns2.size()) {
 			returns1 = new ArrayList<Float>(returns1.subList(returns1.size()-returns2.size(), returns1.size()));
@@ -97,7 +115,7 @@ public class Calculations {
 	}
 	
 	// Method to compute the covariance of one stock compared to an array of other stocks
-	public static CovarianceStructure computeReturnCovariances (String ticker1, ArrayList<String> tickers, String period) {
+	public static CovarianceStructure computeReturnCovariances (String ticker1, ArrayList<String> tickers, String period, Boolean fromCached) {
 		
 		CovarianceStructure covarianceStructure = new CovarianceStructure();
 		// for future purposes, it may be good to see this method as the creation of a row of the variance-covariance matrix
@@ -108,7 +126,7 @@ public class Calculations {
 		
 		HashMap<String, Float> covariances = new HashMap<String, Float>();
 		for (String singleTicker : tickers) {
-			float singleCovariance = computeReturnCovariance(singleTicker, ticker1, period);
+			float singleCovariance = computeReturnCovariance(singleTicker, ticker1, period, fromCached);
 			covariances.put(singleTicker, singleCovariance);
 		}
 		// fill the new Object
@@ -118,7 +136,7 @@ public class Calculations {
 	}
 	
 	// Here it comes the though stuff: Variance-Covariance Matrix
-	public static float[][] getVarianceCovarianceMatrix (ArrayList<String> tickers, String period) {
+	public static float[][] getVarianceCovarianceMatrix (ArrayList<String> tickers, String period, Boolean fromCached) {
 		float[][] varianceCovarianceMatrix = new float[tickers.size()][tickers.size()];
 		
 		// Get the single covariance structure
@@ -127,7 +145,7 @@ public class Calculations {
 			// Add some logging
 			System.out.println("Computing Variance-Covariance Matrix for Ticker: " + ticker +
 					" - Processing stock: " + (row + 1) + " out of " + tickers.size() + " Tickers" );
-			CovarianceStructure singleCovarianceStructure = computeReturnCovariances(ticker, tickers, period);
+			CovarianceStructure singleCovarianceStructure = computeReturnCovariances(ticker, tickers, period, fromCached);
 			// Unpack the single covariances, update the row number
 			int column = 0;
 			for (String tickerCovariance : tickers) {

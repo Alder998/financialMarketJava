@@ -121,10 +121,13 @@ class APITest {
 	  String ticker1 = "AAPL";
 	  String ticker2 = "ISP.MI";
 	  String period = "20y";
+	  String fromCached = "false";
 	  MvcResult result = mockMvc.perform(get("/api/covariance")
 			  .param("ticker1", ticker1)
 			  .param("ticker2", ticker2)
-			  .param("period", period))
+			  .param("period", period)
+			  .param("fromCached", fromCached)
+			  )
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -145,10 +148,13 @@ class APITest {
 	  tickers.add("GOOG");
       String tickersParam = String.join(",", tickers);
 	  String period = "20y";
+	  String fromCached = "false";
 	  MvcResult result = mockMvc.perform(get("/api/covariances")
 			  .param("ticker1", ticker1)
 			  .param("tickers", tickersParam)
-			  .param("period", period))
+			  .param("period", period)
+			  .param("fromCached", fromCached)
+			  )
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -167,9 +173,12 @@ class APITest {
 	  tickers.add("IBE.MC");
       String tickersParam = String.join(",", tickers);
 	  String period = "20y";
+	  String fromCached = "false";
 	  MvcResult result = mockMvc.perform(get("/api/varianceCovarianceMatrix")
 			  .param("tickers", tickersParam)
-			  .param("period", period))
+			  .param("period", period)
+			  .param("fromCached", fromCached)
+			  )
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -188,9 +197,12 @@ class APITest {
 	  tickers.add("IBE.MC");
       String tickersParam = String.join(",", tickers);
 	  String period = "20y";
+	  String fromCached = "false";
 	  MvcResult result = mockMvc.perform(post("/api/createVarianceCovarianceMatrix")
 			  .param("tickers", tickersParam)
-			  .param("period", period))
+			  .param("period", period)
+			  .param("fromCached", fromCached)
+			  )
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -201,9 +213,9 @@ class APITest {
   
   @Test
   public void createVarianceCovarianceMatrixAndReturnFromDatabase() throws Exception {
-	  String stockIndex = "SP500";
-	  String subList = "10";
-	  String period = "5d";
+	  String stockIndex = "allstocks";
+	  String subList = "20";
+	  String period = "20y";
 	  MvcResult result = mockMvc.perform(post("/api/portfolioConstructionComponents")
 			  .param("period", period)
 			  .param("stockIndex", stockIndex)
