@@ -172,7 +172,7 @@ public class DataClass {
 		// SQL String
 		String sql = "INSERT INTO Returns (period, ticker, return) VALUES (?,?,?)";
 		// Compute average return
-		float singleReturn = this.calculateAverageReturns(period, ticker);
+		float singleReturn = this.calculateAverageReturns(ticker, period);
 		// Update SQL
         jdbcTemplate.update(sql, period, ticker, singleReturn);
 	}
@@ -180,10 +180,10 @@ public class DataClass {
 	public void createReturns (ArrayList<String> tickers, String period) {
 		// Iterate through the Ticker's list
 		int iteration = 0;
-		// Logging
-		System.out.println("Calculating Returns: Processing Ticker " + iteration + " Of " + tickers.size() + " Tickers");
 		for (String ticker : tickers) {
 			this.createReturn (ticker, period);
+			// Logging
+			System.out.println("Calculating Returns: Processing Ticker " + (iteration + 1) + " Of " + tickers.size() + " Tickers");
 			iteration++;
 		}
 	}

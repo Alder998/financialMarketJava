@@ -203,7 +203,7 @@ class APITest {
   public void createVarianceCovarianceMatrixAndReturnFromDatabase() throws Exception {
 	  String stockIndex = "SP500";
 	  String subList = "10";
-	  String period = "20y";
+	  String period = "5d";
 	  MvcResult result = mockMvc.perform(post("/api/portfolioConstructionComponents")
 			  .param("period", period)
 			  .param("stockIndex", stockIndex)

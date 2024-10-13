@@ -43,68 +43,79 @@ public class yfinanceScraper {
 	            
 	            // Work on Extracting the data that we want
 	            Elements rowsWithTag = document.select("tr.yf-ewueuo");
-	            	         
+	            
+	            if (rowsWithTag.size() == 0) {
+	            	throw new Exception ("Yahoo Finance Error! No values found for URL");
+	            }
+	            	            	            	         
 	            for (Element element : rowsWithTag.subList(1, rowsWithTag.size())) {
 	            	// Isolate the basic components of the time series
 	            	String component = element.text();
-	            	// Isolate the date (always 'mo day, year'), convert it into OffsetDateTime
-	            	OffsetDateTime date = DataClass_Utils.extractOffsetDateTimeFromString(component);
-	            	
-	            	// Prepare to add the data to the object
-	            	HistoricalTimeSeries historyRow = new HistoricalTimeSeries();
-	            		            	
-	            	// to get specific data, isolate the strings using the space
-	                String[] words = component.split(" ");
-	                // Small refinement to incorporate stock splits, when present
-                	String stockSplit = "NaN";
-                	float dividend = 0;
-	            	// set dividend and splits to avoid NullPointer Exception while updating for special
-	            	// Operations
-	            	historyRow.setDividend(dividend);
-	            	historyRow.setStockSplit(stockSplit);
-	            	historyRow.setDate(date);
-	                if (words.length < 7) {
-	                	if (Arrays.asList(words).contains("Splits")) {
-	                		splitsPresent = true;
-		                	stockSplit = words[3];
-			            	historyRow.setStockSplit(stockSplit);
-	                	}
-	                	if (Arrays.asList(words).contains("Dividend")) {
-	                		dividendsPresent = true;
-	                		dividend = Float.parseFloat(words[3]);
-			            	historyRow.setDividend(dividend);
-	                	}
-	                }
-	                else {
-		                float open = Float.parseFloat(words[3].replace(",", ""));
-		    	        float high = Float.parseFloat(words[4].replace(",", ""));
-		                float low = Float.parseFloat(words[5].replace(",", ""));
-		                float close = Float.parseFloat(words[6].replace(",", "").replace("<", "").replace(">", ""));
-		                // Better to add an if, to avoid to have an error if volume or Adjusted Close are not available
-		                // (it may be not available for very old dates)
-	                	float adjClose = 0.0f;
-		                if (words.length > 7 && !words[7].contains("-") && !words[7].contains("<")) {
-		                	adjClose = Float.parseFloat(words[7].replace(",", ""));
-		                }
-	                	long volume = 0;
-		                if (words.length > 8 && !words[8].contains("-") && !words[8].contains(">")) {
-			                volume = Long.parseLong(words[8].replace(",", ""));
-		                }
-		                
-		                // Fill the object
-		            	historyRow.setDate(date);
-		            	historyRow.setOpen(open);
-		            	historyRow.setHigh(high);
-		            	historyRow.setLow(low);
-		            	historyRow.setClose(close);
-		            	historyRow.setAdjClose(adjClose);
-		            	historyRow.setVolume(volume);
-		            	historyRow.setStockSplit(stockSplit);
+	            	//System.out.println(component);
+	            	if (!component.toLowerCase().equals("there are no in the selected time period.")) {
+	            		
+		            	// Isolate the date (always 'mo day, year'), convert it into OffsetDateTime
+		            	OffsetDateTime date = DataClass_Utils.extractOffsetDateTimeFromString(component);
+		            	
+		            	// Prepare to add the data to the object
+		            	HistoricalTimeSeries historyRow = new HistoricalTimeSeries();
+		            		            	
+		            	// to get specific data, isolate the strings using the space
+		                String[] words = component.split(" ");
+		                // Small refinement to incorporate stock splits, when present
+	                	String stockSplit = "NaN";
+	                	float dividend = 0;
+		            	// set dividend and splits to avoid NullPointer Exception while updating for special
+		            	// Operations
 		            	historyRow.setDividend(dividend);
-
-	                }
-	                // finally, append
-	            	history.add(historyRow);
+		            	historyRow.setStockSplit(stockSplit);
+		            	historyRow.setDate(date);
+		                if (words.length < 7) {
+		                	if (Arrays.asList(words).contains("Splits")) {
+		                		splitsPresent = true;
+			                	stockSplit = words[3];
+				            	historyRow.setStockSplit(stockSplit);
+		                	}
+		                	if (Arrays.asList(words).contains("Dividend")) {
+		                		dividendsPresent = true;
+		                		dividend = Float.parseFloat(words[3]);
+				            	historyRow.setDividend(dividend);
+		                	}
+		                }
+		                else {
+			                float open = Float.parseFloat(words[3].replace(",", ""));
+			    	        float high = Float.parseFloat(words[4].replace(",", ""));
+			                float low = Float.parseFloat(words[5].replace(",", ""));
+			                float close = Float.parseFloat(words[6].replace(",", "").replace("<", "").replace(">", ""));
+			                // Better to add an if, to avoid to have an error if volume or Adjusted Close are not available
+			                // (it may be not available for very old dates)
+		                	float adjClose = 0.0f;
+			                if (words.length > 7 && !words[7].contains("-") && !words[7].contains("<")) {
+			                	adjClose = Float.parseFloat(words[7].replace(",", ""));
+			                }
+		                	long volume = 0;
+			                if (words.length > 8 && !words[8].contains("-") && !words[8].contains(">")) {
+				                volume = Long.parseLong(words[8].replace(",", ""));
+			                }
+			                
+			                // Fill the object
+			            	historyRow.setDate(date);
+			            	historyRow.setOpen(open);
+			            	historyRow.setHigh(high);
+			            	historyRow.setLow(low);
+			            	historyRow.setClose(close);
+			            	historyRow.setAdjClose(adjClose);
+			            	historyRow.setVolume(volume);
+			            	historyRow.setStockSplit(stockSplit);
+			            	historyRow.setDividend(dividend);
+	
+		                }
+		                // finally, append
+		            	history.add(historyRow);
+		            }
+	            	else {
+		            	history.add(new HistoricalTimeSeries());
+	            	}
 	            }
 	            
 	            // Update the final Object for the extraordinary operations (stock splits and dividends)
