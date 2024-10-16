@@ -77,5 +77,10 @@ public class APIEndPoint {
     public void createVarianceCovarianceMatrixAndReturnFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
         controller.createVarianceCovarianceMatrixAndReturnFromDatabase(period, stockIndex, subList);
     }
+    
+    @PostMapping("/api/updateVarianceCovarianceMatrix")
+    public void updateVarianceCovarianceMatrixFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
+        controller.updateVarianceCovarianceMatrixFromDatabase(period, stockIndex, subList);
+    }
 
 }

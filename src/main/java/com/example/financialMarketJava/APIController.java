@@ -73,5 +73,9 @@ public class APIController {
     public void createVarianceCovarianceMatrixAndReturnFromDatabase (String period, String stockIndex, Integer subList) throws Exception {
     	data.createVarianceCovarianceMatrixAndReturnFromDatabase (period, stockIndex, subList);
     }
+    @Transactional
+    public void updateVarianceCovarianceMatrixFromDatabase (String period, String stockIndex, Integer subList) throws Exception {
+    	data.updateVarianceCovarianceMatrixFromDatabase (period, stockIndex, subList);
+    }
 }
 
