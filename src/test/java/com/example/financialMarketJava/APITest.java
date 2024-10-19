@@ -198,9 +198,11 @@ class APITest {
       String tickersParam = String.join(",", tickers);
 	  String period = "20y";
 	  String fromCached = "false";
+	  String assetClass = "Stocks";
 	  MvcResult result = mockMvc.perform(post("/api/createVarianceCovarianceMatrix")
 			  .param("tickers", tickersParam)
 			  .param("period", period)
+			  .param("assetClass", assetClass)
 			  .param("fromCached", fromCached)
 			  )
              .andExpect(MockMvcResultMatchers.status().isOk())
@@ -213,13 +215,16 @@ class APITest {
   
   //@Test
   public void createVarianceCovarianceMatrixAndReturnFromDatabase() throws Exception {
-	  String stockIndex = "allstocks";
-	  String subList = "500";
+	  String stockIndex = "ustreasurybonds";
+	  String subList = "4";
 	  String period = "20y";
+	  String assetClass = "Stocks";
 	  MvcResult result = mockMvc.perform(post("/api/portfolioConstructionComponents")
 			  .param("period", period)
+			  .param("assetClass", assetClass)
 			  .param("stockIndex", stockIndex)
-			  .param("subList", subList))
+			  .param("subList", subList)
+			  )
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -233,10 +238,12 @@ class APITest {
 	  String stockIndex = "SP500";
 	  String subList = "20";
 	  String period = "20y";
+	  String assetClass = "Stocks";
 	  MvcResult result = mockMvc.perform(post("/api/updateVarianceCovarianceMatrix")
 			  .param("period", period)
 			  .param("stockIndex", stockIndex)
-			  .param("subList", subList))
+			  .param("subList", subList)
+			  .param("assetClass", assetClass))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
@@ -248,8 +255,10 @@ class APITest {
   @Test
   public void optimizeStockPortfolio() throws Exception {
 	  String period = "20y";
+	  String assetClass = "Bonds";
 	  MvcResult result = mockMvc.perform(post("/api/optimizeStockPortfolio")
-			  .param("period", period))
+			  .param("period", period)
+			  .param("assetClass", assetClass))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
 	   // Get the JSON body as String

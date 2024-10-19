@@ -69,22 +69,22 @@ public class APIEndPoint {
     }
     
     @PostMapping("/api/createVarianceCovarianceMatrix")
-    public void createCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period, @RequestParam Boolean fromCached) throws Exception {
-        controller.createCovarianceMatrix(tickers, period, fromCached);
+    public void createCovarianceMatrix(@RequestParam ArrayList<String> tickers, @RequestParam String period, @RequestParam String assetClass, @RequestParam Boolean fromCached) throws Exception {
+        controller.createCovarianceMatrix(tickers, period, assetClass, fromCached);
     }
     
     @PostMapping("/api/portfolioConstructionComponents")
-    public void createVarianceCovarianceMatrixAndReturnFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
-        controller.createVarianceCovarianceMatrixAndReturnFromDatabase(period, stockIndex, subList);
+    public void createVarianceCovarianceMatrixAndReturnFromDatabase(@RequestParam String period, @RequestParam String assetClass, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
+        controller.createVarianceCovarianceMatrixAndReturnFromDatabase(period, assetClass, stockIndex, subList);
     }
     
     @PostMapping("/api/updateVarianceCovarianceMatrix")
-    public void updateVarianceCovarianceMatrixFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
-        controller.updateVarianceCovarianceMatrixFromDatabase(period, stockIndex, subList);
+    public void updateVarianceCovarianceMatrixFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList, @RequestParam String assetClass) throws Exception {
+        controller.updateVarianceCovarianceMatrixFromDatabase(period, stockIndex, subList, assetClass);
     }
     @PostMapping("/api/optimizeStockPortfolio")
-    public void optimizeStockPortfolio(@RequestParam String period) throws Exception {
-        controller.optimizeStockPortfolio(period);
+    public void optimizeStockPortfolio(@RequestParam String period, @RequestParam String assetClass) throws Exception {
+        controller.optimizeStockPortfolio(period, assetClass);
     }
 
 }

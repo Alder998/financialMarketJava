@@ -12,6 +12,7 @@ import org.ojalgo.optimisation.Variable;
 import Objects.CovarianceStructure;
 import Objects.HistoricalDataCache;
 import Objects.HistoricalTimeSeries;
+import Objects.VarianceCovarianceMatrix;
 import financialData.yfinanceScraper;
 
 public class Calculations {
@@ -196,8 +197,9 @@ public class Calculations {
     }
 	
     // Optimization Problem for Portfolio with OjAlgo
-    public static void optimizeStockPortfolio (float[][] varianceCovarianceMatrix) {
+    public static void optimizeStockPortfolio (VarianceCovarianceMatrix varianceCovarianceMatrixObject) {
     	// 1. Weights definition (variable according variance-covariance definition)
+    	float [][] varianceCovarianceMatrix = varianceCovarianceMatrixObject.getVarianceCovarianceMatrix();
     	int n = varianceCovarianceMatrix.length;
         ExpressionsBasedModel model = new ExpressionsBasedModel();
     	for (int i=0; i<n; i++) {
@@ -211,7 +213,7 @@ public class Calculations {
             model.getExpression("WeightConstraint").set(model.getVariables().get(j), 1);
     	}
     	
-        // 3. Define the Objective funtion: Minimize w^T Σ w
+        // 3. Define the Objective function: Minimize w^T Σ w
         model.addExpression("Objective").weight(1);
         for (int l = 0; l < n; l++) {
             for (int k = 0; k < n; k++) {
@@ -226,8 +228,15 @@ public class Calculations {
         // 5. print output
         System.out.println("Solution State: " + result.getState());
         System.out.println("Optimal Weights: ");
+        // Print the sum of weights
+        double wTot = 0;
         for (int i = 0; i<result.size(); i++) {
-            System.out.println("w" + i + ": " + result.get(i));
+        	wTot += result.get(i).doubleValue();
+        }
+        System.out.println("Sum of Portfolio Weights: " + wTot);
+        // Print the Name of Stocks to be bought with the relative weight
+        for (int m = 0; m<result.size(); m++) {
+            System.out.println(varianceCovarianceMatrixObject.getTickers().get(m) + " Weight in portfolio: " + result.get(m));
         }
     }
 	

@@ -65,21 +65,21 @@ public class APIController {
     	return data.generateVarianceCovarianceMatrix(tickers, period, fromCached);
     }
     @Transactional
-    public void createCovarianceMatrix (ArrayList<String> tickers, String period, Boolean fromCached) throws Exception {
-    	data.createCovarianceMatrix (tickers, period, fromCached);
+    public void createCovarianceMatrix (ArrayList<String> tickers, String period, String assetClass, Boolean fromCached) throws Exception {
+    	data.createCovarianceMatrix (tickers, period, assetClass, fromCached);
     }
     
     @Transactional
-    public void createVarianceCovarianceMatrixAndReturnFromDatabase (String period, String stockIndex, Integer subList) throws Exception {
-    	data.createVarianceCovarianceMatrixAndReturnFromDatabase (period, stockIndex, subList);
+    public void createVarianceCovarianceMatrixAndReturnFromDatabase (String period, String assetClass, String stockIndex, Integer subList) throws Exception {
+    	data.createVarianceCovarianceMatrixAndReturnFromDatabase (period,assetClass, stockIndex, subList);
     }
     @Transactional
-    public void updateVarianceCovarianceMatrixFromDatabase (String period, String stockIndex, Integer subList) throws Exception {
-    	data.addTickersToReturnsAndVarianceCovarianceMatrixFromDatabase (period, stockIndex, subList);
+    public void updateVarianceCovarianceMatrixFromDatabase (String period, String stockIndex, Integer subList, String assetClass) throws Exception {
+    	data.addTickersToReturnsAndVarianceCovarianceMatrixFromDatabase (period, stockIndex, subList, assetClass);
     }
     @Transactional
-    public void optimizeStockPortfolio (String period) throws Exception {
-    	data.optimizeStockPortfolio (period);
+    public void optimizeStockPortfolio (String period, String assetClass) throws Exception {
+    	data.optimizeStockPortfolio (period, assetClass);
     }
 }
 
