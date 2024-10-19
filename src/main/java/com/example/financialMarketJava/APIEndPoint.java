@@ -82,5 +82,9 @@ public class APIEndPoint {
     public void updateVarianceCovarianceMatrixFromDatabase(@RequestParam String period, @RequestParam String stockIndex, @RequestParam Integer subList) throws Exception {
         controller.updateVarianceCovarianceMatrixFromDatabase(period, stockIndex, subList);
     }
+    @PostMapping("/api/optimizeStockPortfolio")
+    public void optimizeStockPortfolio(@RequestParam String period) throws Exception {
+        controller.optimizeStockPortfolio(period);
+    }
 
 }

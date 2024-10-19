@@ -201,6 +201,27 @@ public class DataClass {
         jdbcTemplate.update(sql, period, tickers.size(), tickersJSON, covarianceMatrixJson);
 	}
 	
+	public void createCovarianceMatrixFromObject (VarianceCovarianceMatrix matrix) {
+		// delete Existing
+		this.deleteVarianceCovarianceMatrixByPeriod(matrix.getPeriod());
+		String sql = "INSERT INTO VarianceCovarianceMatrix (period, stockNumber, tickers, VarianceCovarianceMatrix) VALUES (?,?,?,?)";
+		ObjectMapper objectMapper = new ObjectMapper();
+        String covarianceMatrixJson = null;
+        try {
+            covarianceMatrixJson = objectMapper.writeValueAsString(matrix.getVarianceCovarianceMatrix());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		// Convert the Ticker Array into a JSON String
+        String tickersJSON = null;
+        try {
+        	tickersJSON = objectMapper.writeValueAsString(matrix.getTickers());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        jdbcTemplate.update(sql, matrix.getPeriod(), matrix.getTickers().size(), tickersJSON, covarianceMatrixJson);
+	}
+	
 	public void deleteVarianceCovarianceMatrixByPeriod (String period) {
 		String sql = "DELETE FROM VarianceCovarianceMatrix WHERE period = ?";
         jdbcTemplate.update(sql, period);
@@ -217,14 +238,22 @@ public class DataClass {
 	}
 	
 	// CRUD methods to create and Store Returns
-	public void createReturn (String ticker, String period) {
+	public String createReturn (String ticker, String period) {
 		// SQL String
 		String sql = "INSERT INTO Returns (period, ticker, return) VALUES (?,?,?)";
 		// Compute average return
 		float singleReturn = this.calculateAverageReturns(ticker, period);
-		// Update SQL, only if the return is finite
+		// Update SQL, only if the return is finite, add it to the list
+		ArrayList<String> tickerAdded = new ArrayList<String>();
 		if (!Double.isNaN(singleReturn) && !Double.isInfinite(singleReturn)) {
 	        jdbcTemplate.update(sql, period, ticker, singleReturn);
+	        tickerAdded.add(ticker);
+		}
+		if (tickerAdded.contains(ticker)) {
+			return ticker;
+		}
+		else {
+			return null;
 		}
 	}
 	
@@ -271,7 +300,8 @@ public class DataClass {
 		this.createCovarianceMatrixFromReturns(period, true);
 	}
 	
-	public void addTickersToExistingReturns(String period, ArrayList<String> tickersToAdd) {
+	// Deprecated;
+	public ArrayList<String> addTickersToExistingReturns(String period, ArrayList<String> tickersToAdd) {
 		// get the tickers present in the database of returns
 		Returns existingReturns = this.getReturnsByPeriod(period);
 		ArrayList<String> tickersNotInDB = new ArrayList<String>();
@@ -280,11 +310,23 @@ public class DataClass {
 				tickersNotInDB.add(ticker);
 			}
 		}
+		int iteration = 0;
+		ArrayList<String> tickerAddedToDatabase = new ArrayList<String>();
 		for (String ticker1 : tickersNotInDB) {
-			this.createReturn(ticker1, period);
+			// Logging
+			System.out.println("Calculating Returns: Processing Ticker " + (iteration + 1) + " Of " + tickersNotInDB.size() + " Tickers");
+			String tickerAdded = this.createReturn(ticker1, period);
+			
+			if (tickerAdded != null) {
+				tickerAddedToDatabase.add(tickerAdded);
+			}
+			
+			iteration ++;
 		}
+		return tickerAddedToDatabase;
 	}
 	
+	// Deprecated;
 	public VarianceCovarianceMatrix addTickersToExistingVarianceCovarianceMatrix (String period, ArrayList<String> tickersToAdd) throws JsonMappingException, DataAccessException, JsonProcessingException {
 		// Instantiate the New Variance Covariance Matrix
 		VarianceCovarianceMatrix newVarCovMatrix = new VarianceCovarianceMatrix();
@@ -300,8 +342,11 @@ public class DataClass {
 		}
 		// Now we can Proceed to update the Matrix
 		float[][] matrixToUpdate = existingVarCovMatrix.getVarianceCovarianceMatrix();
-		int existingSize = existingVarCovMatrix.getTickers().size() - 1;
+		int existingSize = existingVarCovMatrix.getTickers().size();
 		// Add to the matrix a number of Rows and columns that is Equivalent to the number of New tickers
+		float[][] newMatrix = DataClass_Utils.expandMatrix(matrixToUpdate, existingSize + tickerNotPresentInDB.size());
+		
+		// Compute the covariance among the new tickers and add them to the matrix
 		int row = 0;
 		for (String ticker : tickerNotPresentInDB) {
 			// Add some logging
@@ -312,28 +357,81 @@ public class DataClass {
 			int column = 0;
 			for (String tickerCovariance : tickerNotPresentInDB) {
 				float covariance = singleCovarianceStructure.getCovariances().get(tickerCovariance);
-				matrixToUpdate[existingSize + row][existingSize + column] = covariance;
+				newMatrix[existingSize + row][existingSize + column] = covariance;
 				// Update columns
 				column ++;
 			}
 			row ++;
 		}
+		
+		// Compute the covariance among the existing tickers and the new ones (computationally Expensive, since the returns are not already stored in the cache)
+		// Since the returns may be re-used many times
+		int iterationForCache = 0;
+		for (String tickerAlreadyPresentInDB : existingVarCovMatrix.getTickers()) {
+			// Hopefully, this will store Returns in the Cache
+			// Logging
+			System.out.println("Caching Returns of Stock: " + iterationForCache +
+					" Out of: " + existingVarCovMatrix.getTickers().size() + " Tickers");
+			Calculations.getReturnDiff(tickerAlreadyPresentInDB, period);
+			iterationForCache ++;
+		}
+		
+		// Now, separately, compute the covariances
+		// Update columns: New columns, Existing rows
+		System.out.println("UPDATING VARIANCE-COVARIANCE MATRIX: EXISTING ROWS, NEW COLUMNS");
+		int row1 = 0;
+		for (String newTicker : tickerNotPresentInDB) {
+			CovarianceStructure covarianceWithExistingTickers = Calculations.computeReturnCovariances(newTicker, existingVarCovMatrix.getTickers(), period, true);
+			int column1 = 0;
+			for (String tickerCovariance : tickerNotPresentInDB) {
+				float covariance = covarianceWithExistingTickers.getCovariances().get(tickerCovariance);
+				newMatrix[row1][existingSize + column1] = covariance;
+				// Update columns
+				column1 ++;
+			}
+			row1 ++;
+		}
+		// Update columns: New rows, Existing columns
+		System.out.println("UPDATING VARIANCE-COVARIANCE MATRIX: EXISTING COLUMNS, NEW ROWS");
+		int row2 = 0;
+		for (String newTicker : tickerNotPresentInDB) {
+			CovarianceStructure covarianceWithExistingTickers = Calculations.computeReturnCovariances(newTicker, existingVarCovMatrix.getTickers(), period, true);
+			int column2 = 0;
+			for (String tickerCovariance : tickerNotPresentInDB) {
+				float covariance = covarianceWithExistingTickers.getCovariances().get(tickerCovariance);
+				newMatrix[row2 + existingSize][column2] = covariance;
+				// Update columns
+				column2 ++;
+			}
+			row2 ++;
+		}
+		
+		// Populate Object
 		ArrayList<String> allTickers = existingVarCovMatrix.getTickers();
 		allTickers.addAll(tickerNotPresentInDB);
-		// Populate Object
-		newVarCovMatrix.setVarianceCovarianceMatrix(matrixToUpdate);
+		newVarCovMatrix.setVarianceCovarianceMatrix(newMatrix);
 		newVarCovMatrix.setTickers(allTickers);
-		
+		newVarCovMatrix.setPeriod(period);
+		// handle the Database
+		this.createCovarianceMatrixFromObject(newVarCovMatrix);
 		return newVarCovMatrix;
 	}
 	
-	public void updateVarianceCovarianceMatrixFromDatabase (String period, String stockIndex, Integer subList) throws JsonMappingException, DataAccessException, JsonProcessingException {
+	// Deprecated;
+	public void addTickersToReturnsAndVarianceCovarianceMatrixFromDatabase (String period, String stockIndex, Integer subList) throws JsonMappingException, DataAccessException, JsonProcessingException {
 		// Get the Stock Index from Database
 		ArrayList<String> stockSample = this.getStockSample(stockIndex, subList);
 		// if integrate = True, then take the non processed tickers from the sample
 		// Compute the main Portfolio Driver Components
-		this.addTickersToExistingReturns(period, stockSample);
-		this.addTickersToExistingVarianceCovarianceMatrix(period, stockSample);
+		ArrayList<String> tickersReturn = this.addTickersToExistingReturns(period, stockSample);
+		this.addTickersToExistingVarianceCovarianceMatrix(period, tickersReturn);
+	}
+	
+	// Optimization Method based just on Variance Covariance Matrix
+	public void optimizeStockPortfolio (String period) throws JsonMappingException, DataAccessException, JsonProcessingException {
+		// get Variance-Covariance Matrix
+		VarianceCovarianceMatrix varCovMat = this.getVarianceCovarianceMatrixByPeriod(period);
+		Calculations.optimizeStockPortfolio(varCovMat.getVarianceCovarianceMatrix());
 	}
 	
 }

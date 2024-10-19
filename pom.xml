@@ -80,6 +80,13 @@
     	<groupId>org.springframework.boot</groupId>
     	<artifactId>spring-boot-starter-jdbc</artifactId>
 	</dependency>
+	
+	<!--OjAlgo is a library to solve Optimization Problems-->
+	<dependency>
+	    <groupId>org.ojalgo</groupId>
+	    <artifactId>ojalgo</artifactId>
+	    <version>54.0.0</version>
+	</dependency>
 
 	</dependencies>
 

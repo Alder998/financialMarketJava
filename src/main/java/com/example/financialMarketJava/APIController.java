@@ -75,7 +75,11 @@ public class APIController {
     }
     @Transactional
     public void updateVarianceCovarianceMatrixFromDatabase (String period, String stockIndex, Integer subList) throws Exception {
-    	data.updateVarianceCovarianceMatrixFromDatabase (period, stockIndex, subList);
+    	data.addTickersToReturnsAndVarianceCovarianceMatrixFromDatabase (period, stockIndex, subList);
+    }
+    @Transactional
+    public void optimizeStockPortfolio (String period) throws Exception {
+    	data.optimizeStockPortfolio (period);
     }
 }
 

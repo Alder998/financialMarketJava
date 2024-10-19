@@ -5,6 +5,10 @@ package com.example.financialMarketJava;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.ojalgo.optimisation.ExpressionsBasedModel;
+import org.ojalgo.optimisation.Optimisation;
+import org.ojalgo.optimisation.Variable;
+
 import Objects.CovarianceStructure;
 import Objects.HistoricalDataCache;
 import Objects.HistoricalTimeSeries;
@@ -158,6 +162,75 @@ public class Calculations {
 		}
 		return varianceCovarianceMatrix;
 	}
+	
+	// Optimization Function
+	// Calculation of Portfolio Metrics
+	
+    // Get Portfolio Returns: R_p = w^T * mu
+    public static double calculatePortfolioReturn(double[] weights, ArrayList<Float> returns) {
+        double portfolioReturn = 0.0;
+        for (int i = 0; i < weights.length; i++) {
+            portfolioReturn += weights[i] * returns.get(i);
+        }
+        return portfolioReturn;
+    }
+
+    // Get Portfolio Variance sigma_p^2 = w^T * Sigma * w
+    public static double calculatePortfolioVariance(double[] weights, double[][] covMatrix) {
+        double portfolioVariance = 0.0;
+        // Iterate Over Variance-Covariance Matrix
+        for (int i = 0; i < weights.length; i++) {
+            for (int j = 0; j < weights.length; j++) {
+            	portfolioVariance += weights[i] * covMatrix[i][j] * weights[j];
+            }
+        }
+        return portfolioVariance;
+    }
+	
+    // Objective Function
+    public static double objectiveFunction(double[] weights, ArrayList<Float> returns, double[][] covMatrix) {
+        double portfolioReturn = calculatePortfolioReturn(weights, returns);
+        double portfolioVariance = calculatePortfolioVariance(weights, covMatrix);
+        //Minimize the portfolio Variance
+        return portfolioVariance;
+    }
+	
+    // Optimization Problem for Portfolio with OjAlgo
+    public static void optimizeStockPortfolio (float[][] varianceCovarianceMatrix) {
+    	// 1. Weights definition (variable according variance-covariance definition)
+    	int n = varianceCovarianceMatrix.length;
+        ExpressionsBasedModel model = new ExpressionsBasedModel();
+    	for (int i=0; i<n; i++) {
+            model.addVariable("w" + i).lower(0).upper(1);
+    	}
+
+    	// 2. Add constraints
+        model.addExpression("WeightConstraint").level(1);
+    	for (int j=0; j<n; j++) {            
+            // Add Objective Function
+            model.getExpression("WeightConstraint").set(model.getVariables().get(j), 1);
+    	}
+    	
+        // 3. Define the Objective funtion: Minimize w^T Σ w
+        model.addExpression("Objective").weight(1);
+        for (int l = 0; l < n; l++) {
+            for (int k = 0; k < n; k++) {
+                float covariance = varianceCovarianceMatrix[l][k];
+                model.getExpression("Objective").set(model.getVariables().get(l),
+                		model.getVariables().get(k), covariance);
+            }
+        }
+    	
+        // 4. Solve Optimization Problem
+        Optimisation.Result result = model.minimise();
+        // 5. print output
+        System.out.println("Solution State: " + result.getState());
+        System.out.println("Optimal Weights: ");
+        for (int i = 0; i<result.size(); i++) {
+            System.out.println("w" + i + ": " + result.get(i));
+        }
+    }
+	
 }
 
 

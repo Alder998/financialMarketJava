@@ -214,7 +214,7 @@ class APITest {
   //@Test
   public void createVarianceCovarianceMatrixAndReturnFromDatabase() throws Exception {
 	  String stockIndex = "allstocks";
-	  String subList = "30";
+	  String subList = "500";
 	  String period = "20y";
 	  MvcResult result = mockMvc.perform(post("/api/portfolioConstructionComponents")
 			  .param("period", period)
@@ -228,10 +228,10 @@ class APITest {
 	   System.out.println(responseBody);
   }
   
-  @Test
+  //@Test
   public void updateVarianceCovarianceMatrixFromDatabase() throws Exception {
-	  String stockIndex = "allstocks";
-	  String subList = "100";
+	  String stockIndex = "SP500";
+	  String subList = "20";
 	  String period = "20y";
 	  MvcResult result = mockMvc.perform(post("/api/updateVarianceCovarianceMatrix")
 			  .param("period", period)
@@ -240,6 +240,18 @@ class APITest {
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
    
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println(responseBody);
+  }
+  
+  @Test
+  public void optimizeStockPortfolio() throws Exception {
+	  String period = "20y";
+	  MvcResult result = mockMvc.perform(post("/api/optimizeStockPortfolio")
+			  .param("period", period))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
 	   // Get the JSON body as String
 	   String responseBody = result.getResponse().getContentAsString();
 	   System.out.println(responseBody);

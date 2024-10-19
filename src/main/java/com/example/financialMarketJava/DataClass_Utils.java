@@ -243,4 +243,20 @@ public class DataClass_Utils {
         return finalHistory;
 	}
 	
+	// method to Expand Matrix
+	public static float[][] expandMatrix(float[][] originalMatrix, int newSize) {
+	    int oldSize = originalMatrix.length;
+
+	    // New Matrix creation with new sizes
+	    float[][] expandedMatrix = new float[newSize][newSize];
+
+	    // Copy the existing values in the new Matrix
+	    for (int i = 0; i < oldSize; i++) {
+	        for (int j = 0; j < oldSize; j++) {
+	            expandedMatrix[i][j] = originalMatrix[i][j];
+	        }
+	    }
+	    return expandedMatrix;
+	}
+	
 }
