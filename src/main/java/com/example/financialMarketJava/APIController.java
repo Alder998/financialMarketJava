@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
+import Objects.Portfolio;
 import Objects.Ticker;
 import yahoofinance.histquotes.HistoricalQuote;
 
@@ -78,8 +79,8 @@ public class APIController {
     	data.addTickersToReturnsAndVarianceCovarianceMatrixFromDatabase (period, stockIndex, subList, assetClass);
     }
     @Transactional
-    public void optimizeStockPortfolio (String period, String assetClass) throws Exception {
-    	data.optimizeStockPortfolio (period, assetClass);
+    public Portfolio optimizeStockPortfolio (String period, String assetClass) throws Exception {
+    	return data.optimizeStockPortfolio (period, assetClass);
     }
 }
 

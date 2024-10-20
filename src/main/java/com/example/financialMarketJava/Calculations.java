@@ -12,6 +12,7 @@ import org.ojalgo.optimisation.Variable;
 import Objects.CovarianceStructure;
 import Objects.HistoricalDataCache;
 import Objects.HistoricalTimeSeries;
+import Objects.Portfolio;
 import Objects.VarianceCovarianceMatrix;
 import financialData.yfinanceScraper;
 
@@ -197,7 +198,8 @@ public class Calculations {
     }
 	
     // Optimization Problem for Portfolio with OjAlgo
-    public static void optimizeStockPortfolio (VarianceCovarianceMatrix varianceCovarianceMatrixObject) {
+    public static Portfolio optimizeStockPortfolio (VarianceCovarianceMatrix varianceCovarianceMatrixObject) {
+    	Portfolio portfolio = new Portfolio();
     	// 1. Weights definition (variable according variance-covariance definition)
     	float [][] varianceCovarianceMatrix = varianceCovarianceMatrixObject.getVarianceCovarianceMatrix();
     	int n = varianceCovarianceMatrix.length;
@@ -234,10 +236,20 @@ public class Calculations {
         	wTot += result.get(i).doubleValue();
         }
         System.out.println("Sum of Portfolio Weights: " + wTot);
-        // Print the Name of Stocks to be bought with the relative weight
+        
+        ArrayList<String> portfolioTickers = new ArrayList<String>();
+        ArrayList<Float> portfolioWeights = new ArrayList<Float>();
+        // Print the Name of Stocks to be bought with the relative weight and fill the arrays for Object
         for (int m = 0; m<result.size(); m++) {
             System.out.println(varianceCovarianceMatrixObject.getTickers().get(m) + " Weight in portfolio: " + result.get(m));
+            portfolioTickers.add(varianceCovarianceMatrixObject.getTickers().get(m));
+            portfolioWeights.add((float) result.get(m).doubleValue());
         }
+        // Populate Object
+        portfolio.setTickers(portfolioTickers);
+        portfolio.setWeights(portfolioWeights);
+        
+        return portfolio;
     }
 	
 }

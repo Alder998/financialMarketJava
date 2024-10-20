@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
+import Objects.Portfolio;
 import Objects.Ticker;
 import yahoofinance.histquotes.HistoricalQuote;
 
@@ -83,8 +84,8 @@ public class APIEndPoint {
         controller.updateVarianceCovarianceMatrixFromDatabase(period, stockIndex, subList, assetClass);
     }
     @PostMapping("/api/optimizeStockPortfolio")
-    public void optimizeStockPortfolio(@RequestParam String period, @RequestParam String assetClass) throws Exception {
-        controller.optimizeStockPortfolio(period, assetClass);
+    public Portfolio optimizeStockPortfolio(@RequestParam String period, @RequestParam String assetClass) throws Exception {
+        return controller.optimizeStockPortfolio(period, assetClass);
     }
 
 }

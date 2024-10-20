@@ -17,6 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import Objects.CovarianceStructure;
 import Objects.HistoricalTimeSeries;
+import Objects.Portfolio;
 import Objects.Returns;
 import Objects.Ticker;
 import Objects.VarianceCovarianceMatrix;
@@ -447,10 +448,14 @@ public class DataClass {
 	}
 	
 	// Optimization Method based just on Variance Covariance Matrix
-	public void optimizeStockPortfolio (String period, String assetClass) throws JsonMappingException, DataAccessException, JsonProcessingException {
+	public Portfolio optimizeStockPortfolio (String period, String assetClass) throws JsonMappingException, DataAccessException, JsonProcessingException {
 		// get Variance-Covariance Matrix
 		VarianceCovarianceMatrix varCovMat = this.getVarianceCovarianceMatrixByPeriodAndAssetClass(period, assetClass);
-		Calculations.optimizeStockPortfolio(varCovMat);
+		Portfolio portfolioCreated = Calculations.optimizeStockPortfolio(varCovMat);
+		// set the asset Class (not possible in the calculation Method
+		portfolioCreated.setMainAssetClass(assetClass);
+		return portfolioCreated;
 	}
 	
+	// TODO: create Portfolio Analytics for Bonds and stock Portfolio (for the nested Optimization)
 }

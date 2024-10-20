@@ -218,7 +218,7 @@ class APITest {
 	  String stockIndex = "ustreasurybonds";
 	  String subList = "4";
 	  String period = "20y";
-	  String assetClass = "Stocks";
+	  String assetClass = "Bonds";
 	  MvcResult result = mockMvc.perform(post("/api/portfolioConstructionComponents")
 			  .param("period", period)
 			  .param("assetClass", assetClass)
