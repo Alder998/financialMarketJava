@@ -454,8 +454,17 @@ public class DataClass {
 		Portfolio portfolioCreated = Calculations.optimizeStockPortfolio(varCovMat);
 		// set the asset Class (not possible in the calculation Method
 		portfolioCreated.setMainAssetClass(assetClass);
+		portfolioCreated.setMetricsPeriod(period);
+
+		// Print Metrics of created Portfolio
+		float averageReturns = Calculations.computePortfolioReturns(portfolioCreated);
+		double portfolioVariance = Calculations.calculatePortfolioVariance(portfolioCreated);
+		System.out.println("Average Portfolio Daily Returns: " + averageReturns);
+		System.out.println("Portfolio Variance: " + portfolioVariance);
+		
 		return portfolioCreated;
 	}
 	
-	// TODO: create Portfolio Analytics for Bonds and stock Portfolio (for the nested Optimization)
+	// TODO: create Portfolio Analytics Data Structure for Bonds and stock Portfolio (for the nested Optimization)
+
 }

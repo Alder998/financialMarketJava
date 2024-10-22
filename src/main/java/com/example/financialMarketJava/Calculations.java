@@ -168,35 +168,6 @@ public class Calculations {
 	// Optimization Function
 	// Calculation of Portfolio Metrics
 	
-    // Get Portfolio Returns: R_p = w^T * mu
-    public static double calculatePortfolioReturn(double[] weights, ArrayList<Float> returns) {
-        double portfolioReturn = 0.0;
-        for (int i = 0; i < weights.length; i++) {
-            portfolioReturn += weights[i] * returns.get(i);
-        }
-        return portfolioReturn;
-    }
-
-    // Get Portfolio Variance sigma_p^2 = w^T * Sigma * w
-    public static double calculatePortfolioVariance(double[] weights, double[][] covMatrix) {
-        double portfolioVariance = 0.0;
-        // Iterate Over Variance-Covariance Matrix
-        for (int i = 0; i < weights.length; i++) {
-            for (int j = 0; j < weights.length; j++) {
-            	portfolioVariance += weights[i] * covMatrix[i][j] * weights[j];
-            }
-        }
-        return portfolioVariance;
-    }
-	
-    // Objective Function
-    public static double objectiveFunction(double[] weights, ArrayList<Float> returns, double[][] covMatrix) {
-        double portfolioReturn = calculatePortfolioReturn(weights, returns);
-        double portfolioVariance = calculatePortfolioVariance(weights, covMatrix);
-        //Minimize the portfolio Variance
-        return portfolioVariance;
-    }
-	
     // Optimization Problem for Portfolio with OjAlgo
     public static Portfolio optimizeStockPortfolio (VarianceCovarianceMatrix varianceCovarianceMatrixObject) {
     	Portfolio portfolio = new Portfolio();
@@ -242,8 +213,10 @@ public class Calculations {
         // Print the Name of Stocks to be bought with the relative weight and fill the arrays for Object
         for (int m = 0; m<result.size(); m++) {
             System.out.println(varianceCovarianceMatrixObject.getTickers().get(m) + " Weight in portfolio: " + result.get(m));
-            portfolioTickers.add(varianceCovarianceMatrixObject.getTickers().get(m));
-            portfolioWeights.add((float) result.get(m).doubleValue());
+            if (result.get(m).doubleValue() > 0) {
+                portfolioTickers.add(varianceCovarianceMatrixObject.getTickers().get(m));
+                portfolioWeights.add((float) result.get(m).doubleValue());
+            }
         }
         // Populate Object
         portfolio.setTickers(portfolioTickers);
@@ -251,7 +224,39 @@ public class Calculations {
         
         return portfolio;
     }
-	
+        
+    // Portfolio Analytics
+    public static float computePortfolioReturns(Portfolio portfolio) {
+    	// iterate for single components
+    	float portfolioReturns = 0;
+    	// Logging
+    	System.out.println("Computing Portfolio Return...");
+    	for (int i = 0; i < portfolio.getTickers().size(); i++) {
+    		portfolioReturns += computeAverageReturn(portfolio.getTickers().get(i), portfolio.getMetricsPeriod()) *
+    							portfolio.getWeights().get(i);
+    	}
+    	return portfolioReturns;
+    }
+    
+
+    // Get Portfolio Variance sigma_p^2 = w^T * Sigma * w
+    public static double calculatePortfolioVariance(Portfolio portfolio) {
+    	
+    	// compute Portfolio tickers Variance Covariance Matrix
+    	// compute it from cached, because we suppose the returns to be calculated before and the diff
+    	// stored in the cache
+    	float[][] covMatrix = getVarianceCovarianceMatrix(portfolio.getTickers(), portfolio.getMetricsPeriod(), true);
+    	
+        double portfolioVariance = 0.0;
+        // Iterate Over Variance-Covariance Matrix
+        for (int i = 0; i < portfolio.getTickers().size(); i++) {
+            for (int j = 0; j < portfolio.getTickers().size(); j++) {
+            	portfolioVariance += portfolio.getWeights().get(i) * covMatrix[i][j] * portfolio.getWeights().get(j);
+            }
+        }
+        return portfolioVariance;
+    }
+    	
 }
 
 

@@ -255,7 +255,7 @@ class APITest {
   @Test
   public void optimizeStockPortfolio() throws Exception {
 	  String period = "20y";
-	  String assetClass = "Bonds";
+	  String assetClass = "Stocks";
 	  MvcResult result = mockMvc.perform(post("/api/optimizeStockPortfolio")
 			  .param("period", period)
 			  .param("assetClass", assetClass))

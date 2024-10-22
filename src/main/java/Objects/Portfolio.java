@@ -7,6 +7,9 @@ public class Portfolio {
 	private ArrayList<String> tickers;
 	private ArrayList<Float> weights;
 	private String mainAssetClass;
+	private float avrerageReturns;
+	private float variance;
+	private String metricsPeriod;
 	
 	public ArrayList<String> getTickers() {
 		return tickers;
@@ -25,6 +28,24 @@ public class Portfolio {
 	}
 	public void setMainAssetClass(String mainAssetClass) {
 		this.mainAssetClass = mainAssetClass;
+	}
+	public float getAvrerageReturns() {
+		return avrerageReturns;
+	}
+	public void setAvrerageReturns(float avrerageReturns) {
+		this.avrerageReturns = avrerageReturns;
+	}
+	public float getVariance() {
+		return variance;
+	}
+	public void setVariance(float variance) {
+		this.variance = variance;
+	}
+	public String getMetricsPeriod() {
+		return metricsPeriod;
+	}
+	public void setMetricsPeriod(String metricsPeriod) {
+		this.metricsPeriod = metricsPeriod;
 	}
 	
 }
