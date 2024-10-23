@@ -82,5 +82,9 @@ public class APIController {
     public Portfolio optimizeStockPortfolio (String period, String assetClass) throws Exception {
     	return data.optimizeStockPortfolio (period, assetClass);
     }
+    @Transactional
+    public void optimizeStocksAndBondsPortfolio (String period) throws Exception {
+    	data.optimizeStocksAndBondsPortfolio (period);
+    }
 }
 

@@ -457,13 +457,28 @@ public class DataClass {
 		portfolioCreated.setMetricsPeriod(period);
 
 		// Print Metrics of created Portfolio
-		float averageReturns = Calculations.computePortfolioReturns(portfolioCreated);
-		double portfolioVariance = Calculations.calculatePortfolioVariance(portfolioCreated);
-		System.out.println("Average Portfolio Daily Returns: " + averageReturns);
-		System.out.println("Portfolio Variance: " + portfolioVariance);
+//		float averageReturns = Calculations.computePortfolioReturns(portfolioCreated);
+//		double portfolioVariance = Calculations.calculatePortfolioVariance(portfolioCreated);
+//		System.out.println("Average Portfolio Daily Returns: " + averageReturns);
+//		System.out.println("Portfolio Variance: " + portfolioVariance);
 		
 		return portfolioCreated;
 	}
+	
+	// General Portfolio Optimization
+	public void optimizeStocksAndBondsPortfolio (String period) throws JsonMappingException, DataAccessException, JsonProcessingException {
+		ArrayList<Portfolio> portfolioArray = new ArrayList<Portfolio>();
+		
+		// Optimize each portfolio
+		Portfolio stockPortfolio = this.optimizeStockPortfolio(period, "Stocks");
+		Portfolio bondPortfolio = this.optimizeStockPortfolio(period, "Bonds");
+		portfolioArray.add(bondPortfolio);
+		portfolioArray.add(stockPortfolio);
+		
+		// Calculate Covariance Matrix between the portfolios
+		Calculations.calculatePortfolioCovarianceMatrix(portfolioArray);
+	}
+	
 	
 	// TODO: create Portfolio Analytics Data Structure for Bonds and stock Portfolio (for the nested Optimization)
 

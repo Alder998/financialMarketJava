@@ -47,6 +47,14 @@ public class Calculations {
 		float mean1 = computeMean(numberList1);
 		float mean2 = computeMean(numberList2);
 		
+		// align the sizes (CHANGE IN FUTURE)
+		if (numberList1.size() > numberList2.size()) {
+			numberList1 = new ArrayList<Float>(numberList1.subList(numberList1.size()-numberList2.size(), numberList1.size()));
+		}
+		else if (numberList2.size() > numberList1.size()) {
+			numberList2 = new ArrayList<Float>(numberList2.subList(numberList2.size()-numberList1.size(), numberList2.size()));
+		}
+		
 		float sumCov = 0.0f;
 		for (int i = 0; i < numberList1.size(); i++) {
 			sumCov += (numberList1.get(i) - mean1) * (numberList2.get(i) - mean2);
@@ -255,6 +263,38 @@ public class Calculations {
             }
         }
         return portfolioVariance;
+    }
+    
+    public static float[][] calculatePortfolioCovarianceMatrix (ArrayList<Portfolio> portfolios) {
+    	
+    	float[][] portfolioCovarianceMatrix = new float[portfolios.size()][portfolios.size()];
+    	// get portfolio return Diff as the weighted return diff of each ticker in the portfolio
+    	ArrayList<ArrayList<Float>> portfolioReturns = new ArrayList<ArrayList<Float>>();
+    	// Logging
+    	System.out.println("Computing Portfolio Return...");
+    	for (Portfolio singlePortfolio : portfolios) {
+        	for (int i = 0; i < singlePortfolio.getTickers().size(); i++) {
+        		ArrayList<Float> singleReturn = getReturnDiff(singlePortfolio.getTickers().get(i), singlePortfolio.getMetricsPeriod());
+        		ArrayList<Float> singleWeightedReturn = new ArrayList<Float>();
+        		for (float singleReturnInPortfolio : singleReturn) {
+    				singleWeightedReturn.add(singleReturnInPortfolio * singlePortfolio.getWeights().get(i));
+        		}
+        	portfolioReturns.add(singleWeightedReturn);
+        	}
+    	}
+    	
+    	// Now that we have the return diff for each one of the portfolios, we are technically able to get the variance-covariance Matrix
+    	int rows = 0;
+    	for (int j=0; j<portfolioReturns.size(); j++) {
+    		int columns = 0;
+    		for (int k=0; k<portfolioReturns.size(); k++) {
+    			portfolioCovarianceMatrix[rows][columns] = computeCovariance(portfolioReturns.get(rows),
+    					portfolioReturns.get(columns));
+    			columns++;
+    		}
+    		rows++;
+    	}
+    	return portfolioCovarianceMatrix;
     }
     	
 }

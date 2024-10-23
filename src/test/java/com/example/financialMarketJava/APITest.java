@@ -252,13 +252,25 @@ class APITest {
 	   System.out.println(responseBody);
   }
   
-  @Test
+  //@Test
   public void optimizeStockPortfolio() throws Exception {
 	  String period = "20y";
 	  String assetClass = "Stocks";
 	  MvcResult result = mockMvc.perform(post("/api/optimizeStockPortfolio")
 			  .param("period", period)
 			  .param("assetClass", assetClass))
+             .andExpect(MockMvcResultMatchers.status().isOk())
+             .andReturn();
+	   // Get the JSON body as String
+	   String responseBody = result.getResponse().getContentAsString();
+	   System.out.println(responseBody);
+  }
+  
+  @Test
+  public void optimizeStocksAndBondsPortfolio() throws Exception {
+	  String period = "20y";
+	  MvcResult result = mockMvc.perform(post("/api/optimizeStocksAndBondsPortfolio")
+			  .param("period", period))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
 	   // Get the JSON body as String
