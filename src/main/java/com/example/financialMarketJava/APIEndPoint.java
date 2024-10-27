@@ -88,8 +88,8 @@ public class APIEndPoint {
         return controller.optimizeStockPortfolio(period, assetClass);
     }
     @PostMapping("/api/optimizeStocksAndBondsPortfolio")
-    public void optimizeStocksAndBondsPortfolio(@RequestParam String period) throws Exception {
-        controller.optimizeStocksAndBondsPortfolio(period);
+    public Portfolio optimizeStocksAndBondsPortfolio(@RequestParam String period, @RequestParam ArrayList<String> assetClasses) throws Exception {
+        return controller.optimizeStocksAndBondsPortfolio(period, assetClasses);
     }
 
 }

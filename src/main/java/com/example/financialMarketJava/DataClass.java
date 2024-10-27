@@ -466,19 +466,32 @@ public class DataClass {
 	}
 	
 	// General Portfolio Optimization
-	public void optimizeStocksAndBondsPortfolio (String period) throws JsonMappingException, DataAccessException, JsonProcessingException {
+	public Portfolio optimizeStocksAndBondsPortfolio (String period, ArrayList<String> assetClasses) throws JsonMappingException, DataAccessException, JsonProcessingException {
 		ArrayList<Portfolio> portfolioArray = new ArrayList<Portfolio>();
-		
 		// Optimize each portfolio
-		Portfolio stockPortfolio = this.optimizeStockPortfolio(period, "Stocks");
-		Portfolio bondPortfolio = this.optimizeStockPortfolio(period, "Bonds");
-		portfolioArray.add(bondPortfolio);
-		portfolioArray.add(stockPortfolio);
+		for (String assetClass : assetClasses) {
+			Portfolio portfolio = this.optimizeStockPortfolio(period, assetClass);
+			portfolioArray.add(portfolio);
+		}
 		
 		// Calculate Covariance Matrix between the portfolios
-		Calculations.calculatePortfolioCovarianceMatrix(portfolioArray);
+		// Generate Variance Covariance Matrix Object
+		VarianceCovarianceMatrix varCovMatrixGeneral = new VarianceCovarianceMatrix();
+		float[][] covMatrixAllPortfolio = Calculations.calculatePortfolioCovarianceMatrix(portfolioArray);
+		// Populate the Object
+		varCovMatrixGeneral.setPeriod(period);
+		varCovMatrixGeneral.setVarianceCovarianceMatrix(covMatrixAllPortfolio);
+		varCovMatrixGeneral.setTickers(assetClasses);
+		// Run Optimization
+		Portfolio assetClassOptimization = Calculations.optimizeStockPortfolio(varCovMatrixGeneral);
+		// Populate Portfolio Object
+		assetClassOptimization.setMainAssetClass("General");
+		assetClassOptimization.setMetricsPeriod(period);
+		
+		// Now it's time to Obtain the final Weights
+		
+		return assetClassOptimization;
 	}
-	
 	
 	// TODO: create Portfolio Analytics Data Structure for Bonds and stock Portfolio (for the nested Optimization)
 

@@ -269,8 +269,13 @@ class APITest {
   @Test
   public void optimizeStocksAndBondsPortfolio() throws Exception {
 	  String period = "20y";
+	  ArrayList<String> assetClasses = new ArrayList<String>();
+	  assetClasses.add("Stocks");
+	  assetClasses.add("Bonds");
+      String assetClassesString = String.join(",", assetClasses);
 	  MvcResult result = mockMvc.perform(post("/api/optimizeStocksAndBondsPortfolio")
-			  .param("period", period))
+			  .param("period", period)
+			  .param("assetClasses", assetClassesString))
              .andExpect(MockMvcResultMatchers.status().isOk())
              .andReturn();
 	   // Get the JSON body as String

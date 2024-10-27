@@ -273,14 +273,29 @@ public class Calculations {
     	// Logging
     	System.out.println("Computing Portfolio Return...");
     	for (Portfolio singlePortfolio : portfolios) {
+        	ArrayList<ArrayList<Float>> portfolioSingleReturns = new ArrayList<ArrayList<Float>>();
         	for (int i = 0; i < singlePortfolio.getTickers().size(); i++) {
         		ArrayList<Float> singleReturn = getReturnDiff(singlePortfolio.getTickers().get(i), singlePortfolio.getMetricsPeriod());
         		ArrayList<Float> singleWeightedReturn = new ArrayList<Float>();
         		for (float singleReturnInPortfolio : singleReturn) {
     				singleWeightedReturn.add(singleReturnInPortfolio * singlePortfolio.getWeights().get(i));
         		}
-        	portfolioReturns.add(singleWeightedReturn);
+        	portfolioSingleReturns.add(singleWeightedReturn);
         	}
+        	// Now, sum each one of the weighted returns
+        	// Initialize final Array
+        	ArrayList<Float> sumList = new ArrayList<Float>();
+        	// 1 is because each member is the same size 
+            for (int ji = 0; ji < portfolioSingleReturns.get(0).size(); ji++) {
+                sumList.add(0.0f);
+            }
+	            for (ArrayList<Float> list : portfolioSingleReturns) {
+	                for (int ki = 0; ki < list.size(); ki++) {
+	                    // Sum the values for position ki
+	                    sumList.set(ki, list.get(ki) + list.get(ki));
+	                }
+	            }
+            portfolioReturns.add(sumList);
     	}
     	
     	// Now that we have the return diff for each one of the portfolios, we are technically able to get the variance-covariance Matrix
@@ -288,8 +303,8 @@ public class Calculations {
     	for (int j=0; j<portfolioReturns.size(); j++) {
     		int columns = 0;
     		for (int k=0; k<portfolioReturns.size(); k++) {
-    			portfolioCovarianceMatrix[rows][columns] = computeCovariance(portfolioReturns.get(rows),
-    					portfolioReturns.get(columns));
+    			portfolioCovarianceMatrix[rows][columns] = computeCovariance(portfolioReturns.get(j),
+    					portfolioReturns.get(k));
     			columns++;
     		}
     		rows++;
