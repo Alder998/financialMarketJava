@@ -488,9 +488,28 @@ public class DataClass {
 		assetClassOptimization.setMainAssetClass("General");
 		assetClassOptimization.setMetricsPeriod(period);
 		
-		// Now it's time to Obtain the final Weights
+		// Now it's time to Obtain the final Weights, and save the Portfolio in the DB
+		Portfolio finalPortfolio = new Portfolio();
+		ArrayList<Float> aggregatedWeights = new ArrayList<Float>();
+		ArrayList<String> aggregatedTickers = new ArrayList<String>();
+		for (int singleAssetClass=0; singleAssetClass<assetClassOptimization.getTickers().size(); singleAssetClass++) {
+			final int lambdaItem = singleAssetClass;
+			// Get the weight relative the single AssetClass
+			Portfolio relativePortfolio = (Portfolio) portfolioArray.stream().filter(
+					(x) -> x.getMainAssetClass().equals(assetClassOptimization.getTickers().get(lambdaItem)));
+			for (int singleItemForAssetClass=0; singleItemForAssetClass<relativePortfolio.getWeights().size();singleItemForAssetClass++) {
+				// Only one Weight Array is needed
+				aggregatedWeights.add(relativePortfolio.getWeights().get(singleItemForAssetClass) *
+						assetClassOptimization.getWeights().get(singleAssetClass));
+				aggregatedTickers.add(relativePortfolio.getTickers().get(singleItemForAssetClass));
+			}
+		}
+		// Populate the final Object
+		finalPortfolio.setWeights(aggregatedWeights);
+		finalPortfolio.setMetricsPeriod(period);
+		finalPortfolio.setTickers(aggregatedTickers);
 		
-		return assetClassOptimization;
+		return finalPortfolio;
 	}
 	
 	// TODO: create Portfolio Analytics Data Structure for Bonds and stock Portfolio (for the nested Optimization)
