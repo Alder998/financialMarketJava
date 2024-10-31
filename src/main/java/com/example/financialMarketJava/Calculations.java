@@ -177,7 +177,7 @@ public class Calculations {
 	// Calculation of Portfolio Metrics
 	
     // Optimization Problem for Portfolio with OjAlgo
-    public static Portfolio optimizeStockPortfolio (VarianceCovarianceMatrix varianceCovarianceMatrixObject) {
+    public static Portfolio optimizeStockPortfolio (VarianceCovarianceMatrix varianceCovarianceMatrixObject, String strategy) {
     	Portfolio portfolio = new Portfolio();
     	// 1. Weights definition (variable according variance-covariance definition)
     	float [][] varianceCovarianceMatrix = varianceCovarianceMatrixObject.getVarianceCovarianceMatrix();
@@ -194,15 +194,18 @@ public class Calculations {
             model.getExpression("WeightConstraint").set(model.getVariables().get(j), 1);
     	}
     	
-        // 3. Define the Objective function: Minimize w^T Σ w
-        model.addExpression("Objective").weight(1);
-        for (int l = 0; l < n; l++) {
-            for (int k = 0; k < n; k++) {
-                float covariance = varianceCovarianceMatrix[l][k];
-                model.getExpression("Objective").set(model.getVariables().get(l),
-                		model.getVariables().get(k), covariance);
+    	// Define Objective according the strategy
+    	if (strategy.toLowerCase().equals("variancecovariancematrix")) {
+            // 3. Define the Objective function: Minimize w^T Σ w
+            model.addExpression("Objective").weight(1);
+            for (int l = 0; l < n; l++) {
+                for (int k = 0; k < n; k++) {
+                    float covariance = varianceCovarianceMatrix[l][k];
+                    model.getExpression("Objective").set(model.getVariables().get(l),
+                    		model.getVariables().get(k), covariance);
+                }
             }
-        }
+    	}
     	
         // 4. Solve Optimization Problem
         Optimisation.Result result = model.minimise();

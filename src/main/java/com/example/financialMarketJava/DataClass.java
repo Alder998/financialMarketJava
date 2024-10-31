@@ -451,7 +451,7 @@ public class DataClass {
 	public Portfolio optimizeStockPortfolio (String period, String assetClass) throws JsonMappingException, DataAccessException, JsonProcessingException {
 		// get Variance-Covariance Matrix
 		VarianceCovarianceMatrix varCovMat = this.getVarianceCovarianceMatrixByPeriodAndAssetClass(period, assetClass);
-		Portfolio portfolioCreated = Calculations.optimizeStockPortfolio(varCovMat);
+		Portfolio portfolioCreated = Calculations.optimizeStockPortfolio(varCovMat, "varianceCovarianceMatrix");
 		// set the asset Class (not possible in the calculation Method
 		portfolioCreated.setMainAssetClass(assetClass);
 		portfolioCreated.setMetricsPeriod(period);
@@ -466,7 +466,7 @@ public class DataClass {
 	}
 	
 	// General Portfolio Optimization
-	public Portfolio optimizeStocksAndBondsPortfolio (String period, ArrayList<String> assetClasses) throws JsonMappingException, DataAccessException, JsonProcessingException {
+	public Portfolio optimizeMultiAssetPortfolio (String period, ArrayList<String> assetClasses) throws JsonMappingException, DataAccessException, JsonProcessingException {
 		ArrayList<Portfolio> portfolioArray = new ArrayList<Portfolio>();
 		// Optimize each portfolio
 		for (String assetClass : assetClasses) {
@@ -483,7 +483,7 @@ public class DataClass {
 		varCovMatrixGeneral.setVarianceCovarianceMatrix(covMatrixAllPortfolio);
 		varCovMatrixGeneral.setTickers(assetClasses);
 		// Run Optimization
-		Portfolio assetClassOptimization = Calculations.optimizeStockPortfolio(varCovMatrixGeneral);
+		Portfolio assetClassOptimization = Calculations.optimizeStockPortfolio(varCovMatrixGeneral, "varianceCovarianceMatrix");
 		// Populate Portfolio Object
 		assetClassOptimization.setMainAssetClass("General");
 		assetClassOptimization.setMetricsPeriod(period);
@@ -496,7 +496,9 @@ public class DataClass {
 			final int lambdaItem = singleAssetClass;
 			// Get the weight relative the single AssetClass
 			Portfolio relativePortfolio = (Portfolio) portfolioArray.stream().filter(
-					(x) -> x.getMainAssetClass().equals(assetClassOptimization.getTickers().get(lambdaItem)));
+					(x) -> x.getMainAssetClass().toLowerCase().equals(assetClassOptimization.getTickers().get(lambdaItem).toLowerCase())).findFirst()
+		            .map(portfolio -> (Portfolio) portfolio)
+		            .orElse(null);
 			for (int singleItemForAssetClass=0; singleItemForAssetClass<relativePortfolio.getWeights().size();singleItemForAssetClass++) {
 				// Only one Weight Array is needed
 				aggregatedWeights.add(relativePortfolio.getWeights().get(singleItemForAssetClass) *
